@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NinjaParent — Investor Pitch</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Outfit:wght@600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --brand: #0f766e;
+      --brand-light: #ccfbf1;
+      --dark: #0f172a;
+      --muted: #64748b;
+      --slide-w: min(1100px, 92vw);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: #0f172a;
+      color: var(--dark);
+      overflow: hidden;
+      height: 100vh;
+    }
+    .deck { height: 100vh; position: relative; }
+    .slide {
+      position: absolute; inset: 0;
+      display: flex; align-items: center; justify-content: center;
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.4s ease;
+      padding: 2rem;
+    }
+    .slide.active { opacity: 1; pointer-events: auto; }
+    .slide-inner {
+      width: var(--slide-w);
+      min-height: 72vh;
+      background: #fff;
+      border-radius: 24px;
+      padding: 3.5rem 4rem;
+      box-shadow: 0 25px 80px rgba(0,0,0,0.4);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    .slide-inner.dark {
+      background: linear-gradient(135deg, #0f766e 0%, #115e59 50%, #134e4a 100%);
+      color: #fff;
+    }
+    h1, h2 { font-family: 'Outfit', sans-serif; }
+    h1 { font-size: clamp(2.5rem, 5vw, 4rem); font-weight: 800; line-height: 1.1; }
+    h2 { font-size: clamp(1.8rem, 3.5vw, 2.8rem); font-weight: 700; margin-bottom: 1.5rem; color: var(--brand); }
+    .slide-inner.dark h2 { color: #5eead4; }
+    .subtitle { font-size: 1.35rem; color: var(--muted); margin-top: 1rem; line-height: 1.5; }
+    .slide-inner.dark .subtitle { color: rgba(255,255,255,0.85); }
+    .tagline { font-size: 1.1rem; color: #5eead4; font-weight: 600; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.1em; }
+    ul { list-style: none; margin-top: 1rem; }
+    ul li {
+      padding: 0.75rem 0;
+      font-size: 1.2rem;
+      border-bottom: 1px solid #f1f5f9;
+      display: flex; align-items: flex-start; gap: 0.75rem;
+    }
+    ul li::before { content: "→"; color: var(--brand); font-weight: 700; flex-shrink: 0; }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 1rem; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin-top: 1.5rem; }
+    .card {
+      background: #f8fafc;
+      border-radius: 16px;
+      padding: 1.5rem;
+      border: 1px solid #e2e8f0;
+    }
+    .card h3 { font-family: 'Outfit', sans-serif; font-size: 1.1rem; margin-bottom: 0.5rem; color: var(--brand); }
+    .card p { font-size: 0.95rem; color: var(--muted); line-height: 1.5; }
+    .stat { text-align: center; }
+    .stat .num { font-family: 'Outfit', sans-serif; font-size: 2.5rem; font-weight: 800; color: var(--brand); }
+    .stat .label { font-size: 0.9rem; color: var(--muted); margin-top: 0.25rem; }
+    .logo { display: flex; align-items: center; gap: 1rem; margin-bottom: 2rem; }
+    .logo-icon {
+      width: 56px; height: 56px; background: rgba(255,255,255,0.2);
+      border-radius: 14px; display: flex; align-items: center; justify-content: center;
+    }
+    .nav {
+      position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%);
+      display: flex; align-items: center; gap: 1rem;
+      background: rgba(255,255,255,0.1); backdrop-filter: blur(12px);
+      padding: 0.75rem 1.5rem; border-radius: 100px;
+      z-index: 100;
+    }
+    .nav button {
+      background: rgba(255,255,255,0.15); border: none; color: #fff;
+      width: 40px; height: 40px; border-radius: 50%; cursor: pointer;
+      font-size: 1.2rem; transition: background 0.2s;
+    }
+    .nav button:hover { background: rgba(255,255,255,0.3); }
+    .nav span { color: rgba(255,255,255,0.7); font-size: 0.9rem; min-width: 60px; text-align: center; }
+    .highlight { background: var(--brand-light); padding: 0.15rem 0.5rem; border-radius: 6px; color: var(--brand); font-weight: 600; }
+    .ask-box {
+      background: linear-gradient(135deg, #f0fdfa, #ccfbf1);
+      border: 2px solid #5eead4;
+      border-radius: 20px;
+      padding: 2rem;
+      margin-top: 1.5rem;
+      text-align: center;
+    }
+    .ask-box .amount { font-family: 'Outfit', sans-serif; font-size: 3rem; font-weight: 800; color: var(--brand); }
+    table { width: 100%; border-collapse: collapse; margin-top: 1rem; font-size: 1rem; }
+    th, td { padding: 0.75rem 1rem; text-align: left; border-bottom: 1px solid #e2e8f0; }
+    th { color: var(--muted); font-weight: 600; font-size: 0.85rem; text-transform: uppercase; }
+    .problem-stat { font-size: 3rem; font-weight: 800; color: #ef4444; font-family: 'Outfit', sans-serif; }
+    @media (max-width: 768px) {
+      .slide-inner { padding: 2rem; }
+      .grid-2, .grid-3 { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="deck" id="deck">
+
+    <!-- Slide 1: Title -->
+    <div class="slide active" data-slide="1">
+      <div class="slide-inner dark">
+        <div class="logo">
+          <div class="logo-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M4 18V8l8-4 8 4v10l-8 4-8-4z"/><path d="M12 4v16M4 8l8 4 8-4"/></svg>
+          </div>
+          <span style="font-family:Outfit;font-size:1.5rem;font-weight:700;">NinjaParent</span>
+        </div>
+        <p class="tagline">The parent OS for school life</p>
+        <h1>Never miss what matters.<br/>Know what to do next.</h1>
+        <p class="subtitle" style="margin-top:1.5rem;">AI-powered command center that unifies school communications across all your kids, schools, and apps.</p>
+        <p class="subtitle" style="margin-top:2rem;font-size:1rem;opacity:0.7;">Seed Round · July 2026</p>
+      </div>
+    </div>
+
+    <!-- Slide 2: Problem -->
+    <div class="slide" data-slide="2">
+      <div class="slide-inner">
+        <h2>The problem</h2>
+        <p class="subtitle">Busy parents are drowning in fragmented school communication</p>
+        <div class="grid-3" style="margin-top:2rem;">
+          <div class="stat"><div class="problem-stat">50–200</div><div class="label">messages per child per month</div></div>
+          <div class="stat"><div class="problem-stat">5+</div><div class="label">apps per school (email, Spider, Parent Pay…)</div></div>
+          <div class="stat"><div class="problem-stat">37%</div><div class="label">of parents miss a deadline each term</div></div>
+        </div>
+        <ul style="margin-top:2rem;">
+          <li>Trip payments buried in newsletters — child excluded from events</li>
+          <li>Homework deadlines scattered across Spider, email, and SIMS</li>
+          <li>Multi-child households: wrong child, wrong payment, wrong form</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Slide 3: Solution -->
+    <div class="slide" data-slide="3">
+      <div class="slide-inner">
+        <h2>Our solution</h2>
+        <p class="subtitle">One dashboard. All kids. AI-prioritized actions.</p>
+        <div class="grid-2">
+          <div class="card">
+            <h3>🔗 Unified ingestion</h3>
+            <p>Connect email, Spider, Parent Pay, SIMS. Every school message becomes a structured action item.</p>
+          </div>
+          <div class="card">
+            <h3>🧠 AI prioritization</h3>
+            <p>Machine learning ranks what needs attention now — payments, deadlines, registrations — in order of urgency.</p>
+          </div>
+          <div class="card">
+            <h3>👨‍👩‍👧‍👦 Multi-child filter</h3>
+            <p>Switch between kids instantly. See Lily's homework and Noah's trip payment in one place.</p>
+          </div>
+          <div class="card">
+            <h3>⚡ Action-first UX</h3>
+            <p>Every card has one clear CTA: Pay, Register, Sign, Complete. No more hunting through apps.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 4: Product -->
+    <div class="slide" data-slide="4">
+      <div class="slide-inner">
+        <h2>Product demo</h2>
+        <p class="subtitle">Working prototype — live today</p>
+        <div class="grid-2" style="align-items:center;">
+          <div>
+            <ul>
+              <li><strong>Today's priorities</strong> — AI-ranked action queue</li>
+              <li><strong>AI insight</strong> — "Batch these 2 Parent Pay items"</li>
+              <li><strong>Child filters</strong> — Lily, Noah, Mia</li>
+              <li><strong>Type filters</strong> — Payments, homework, events</li>
+              <li><strong>Connected sources</strong> — Gmail, Spider, Parent Pay, SIMS</li>
+            </ul>
+          </div>
+          <div class="card" style="background:linear-gradient(135deg,#f0fdfa,#fff);text-align:center;padding:2.5rem;">
+            <p style="font-size:3rem;margin-bottom:0.5rem;">📱</p>
+            <p style="font-weight:600;color:var(--brand);font-size:1.1rem;">Interactive prototype</p>
+            <p style="color:var(--muted);margin-top:0.5rem;font-size:0.95rem;">Run locally or view demo video</p>
+            <p style="margin-top:1rem;font-family:monospace;font-size:0.85rem;background:#fff;padding:0.5rem 1rem;border-radius:8px;display:inline-block;">localhost:5173</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 5: How it works -->
+    <div class="slide" data-slide="5">
+      <div class="slide-inner">
+        <h2>How it works</h2>
+        <div class="grid-3">
+          <div class="card" style="text-align:center;">
+            <p style="font-size:2rem;margin-bottom:0.5rem;">1</p>
+            <h3>Connect</h3>
+            <p>OAuth to Gmail, forward school emails, link Parent Pay notifications</p>
+          </div>
+          <div class="card" style="text-align:center;">
+            <p style="font-size:2rem;margin-bottom:0.5rem;">2</p>
+            <h3>Extract</h3>
+            <p>LLM pipeline parses newsletters, apps, PDFs into structured data with deadlines & amounts</p>
+          </div>
+          <div class="card" style="text-align:center;">
+            <p style="font-size:2rem;margin-bottom:0.5rem;">3</p>
+            <h3>Prioritize</h3>
+            <p>ML model scores urgency by deadline, type, consequence, and your behavior</p>
+          </div>
+        </div>
+        <p class="subtitle" style="margin-top:2rem;text-align:center;">Parents see a single "do today" queue — not 47 unread emails</p>
+      </div>
+    </div>
+
+    <!-- Slide 6: Market -->
+    <div class="slide" data-slide="6">
+      <div class="slide-inner">
+        <h2>Market opportunity</h2>
+        <table>
+          <tr><th>Segment</th><th>Size</th><th>Notes</th></tr>
+          <tr><td>UK families with school-age children</td><td><strong>~8M households</strong></td><td>2.3 children avg in target demo</td></tr>
+          <tr><td>US families (expansion)</td><td><strong>~35M households</strong></td><td>ParentSquare, Remind, Skyward ecosystem</td></tr>
+          <tr><td>SAM (multi-child, dual income)</td><td><strong>~3M UK / 12M US</strong></td><td>Primary ICP: time-poor, app-fatigued</td></tr>
+          <tr><td>SOM (Year 3 target)</td><td><strong>50K families</strong></td><td>£6M ARR at £9.99/mo</td></tr>
+        </table>
+        <p class="subtitle" style="margin-top:1.5rem;">Beachhead: UK parents using Spider, Parent Pay, SIMS — then US expansion</p>
+      </div>
+    </div>
+
+    <!-- Slide 7: Business model -->
+    <div class="slide" data-slide="7">
+      <div class="slide-inner">
+        <h2>Business model</h2>
+        <div class="grid-3">
+          <div class="card stat">
+            <div class="num">£0</div>
+            <div class="label" style="font-weight:600;margin:0.5rem 0;">Free</div>
+            <p>1 child, email only, weekly digest</p>
+          </div>
+          <div class="card stat" style="border:2px solid var(--brand);">
+            <div class="num">£9.99</div>
+            <div class="label" style="font-weight:600;margin:0.5rem 0;">Family /mo</div>
+            <p>Unlimited kids, all connectors, AI priority</p>
+          </div>
+          <div class="card stat">
+            <div class="num">£79</div>
+            <div class="label" style="font-weight:600;margin:0.5rem 0;">Family /yr</div>
+            <p>34% discount, higher LTV</p>
+          </div>
+        </div>
+        <p class="subtitle" style="margin-top:1.5rem;">Year 2 B2B2C: school licenses at £2–5/pupil/year for parent engagement analytics</p>
+        <div class="grid-3" style="margin-top:1rem;">
+          <div class="stat"><div class="num" style="font-size:1.8rem;">75%+</div><div class="label">Gross margin</div></div>
+          <div class="stat"><div class="num" style="font-size:1.8rem;">£120+</div><div class="label">Target LTV</div></div>
+          <div class="stat"><div class="num" style="font-size:1.8rem;">£15–25</div><div class="label">Target CAC</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 8: Traction & roadmap -->
+    <div class="slide" data-slide="8">
+      <div class="slide-inner">
+        <h2>Traction & roadmap</h2>
+        <div class="grid-2">
+          <div>
+            <h3 style="font-family:Outfit;color:var(--brand);margin-bottom:1rem;">Today</h3>
+            <ul>
+              <li>Working interactive prototype</li>
+              <li>AI extraction pipeline designed</li>
+              <li>15 parent discovery interviews planned</li>
+              <li>200-email benchmark corpus in progress</li>
+            </ul>
+          </div>
+          <div>
+            <h3 style="font-family:Outfit;color:var(--brand);margin-bottom:1rem;">Next 12 months</h3>
+            <ul>
+              <li><span class="highlight">Q3</span> Gmail integration + 30 beta families</li>
+              <li><span class="highlight">Q4</span> Parent Pay + Spider email parsing</li>
+              <li><span class="highlight">Q1</span> 500 paying families, ML priority v2</li>
+              <li><span class="highlight">Q2</span> Mobile app + 1 school partnership</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 9: Competition -->
+    <div class="slide" data-slide="9">
+      <div class="slide-inner">
+        <h2>Why we win</h2>
+        <table>
+          <tr><th></th><th>School apps (Spider, Parent Pay)</th><th>Email / Calendar</th><th>NinjaParent</th></tr>
+          <tr><td>Multi-school / multi-child</td><td>❌ One school each</td><td>❌ No structure</td><td>✅ Unified</td></tr>
+          <tr><td>AI prioritization</td><td>❌</td><td>❌</td><td>✅ Core feature</td></tr>
+          <tr><td>Cross-app actions</td><td>❌ Siloed</td><td>❌</td><td>✅ One queue</td></tr>
+          <tr><td>Parent-centric</td><td>❌ School-centric</td><td>Partial</td><td>✅ Built for parents</td></tr>
+        </table>
+        <p class="subtitle" style="margin-top:1.5rem;"><strong>Moat:</strong> Parent behavior data + cross-school graph → better prioritization over time</p>
+      </div>
+    </div>
+
+    <!-- Slide 10: Ask -->
+    <div class="slide" data-slide="10">
+      <div class="slide-inner dark">
+        <p class="tagline">The ask</p>
+        <h1 style="margin-bottom:1rem;">Raising £750K seed</h1>
+        <div class="ask-box" style="background:rgba(255,255,255,0.1);border-color:rgba(255,255,255,0.3);">
+          <div class="grid-3" style="color:#fff;">
+            <div><div class="amount" style="color:#5eead4;font-size:2rem;">40%</div><div class="label" style="color:rgba(255,255,255,0.8);">Product & engineering</div></div>
+            <div><div class="amount" style="color:#5eead4;font-size:2rem;">35%</div><div class="label" style="color:rgba(255,255,255,0.8);">Growth & parent acquisition</div></div>
+            <div><div class="amount" style="color:#5eead4;font-size:2rem;">25%</div><div class="label" style="color:rgba(255,255,255,0.8);">Ops, legal, partnerships</div></div>
+          </div>
+        </div>
+        <p class="subtitle" style="margin-top:2rem;text-align:center;">
+          <strong>Milestone:</strong> 500 paying families · 1 school partnership · &lt;5% missed critical deadlines
+        </p>
+        <p class="subtitle" style="margin-top:1.5rem;text-align:center;font-size:1.1rem;">
+          ninja.parent · demo@ninjaschool.app
+        </p>
+      </div>
+    </div>
+
+  </div>
+
+  <nav class="nav">
+    <button id="prev" aria-label="Previous">←</button>
+    <span id="counter">1 / 10</span>
+    <button id="next" aria-label="Next">→</button>
+  </nav>
+
+  <script>
+    const slides = document.querySelectorAll('.slide');
+    let current = 0;
+    function show(n) {
+      current = Math.max(0, Math.min(n, slides.length - 1));
+      slides.forEach((s, i) => s.classList.toggle('active', i === current));
+      document.getElementById('counter').textContent = `${current + 1} / ${slides.length}`;
+    }
+    document.getElementById('prev').onclick = () => show(current - 1);
+    document.getElementById('next').onclick = () => show(current + 1);
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); show(current + 1); }
+      if (e.key === 'ArrowLeft') { e.preventDefault(); show(current - 1); }
+    });
+  </script>
+</body>
+</html>
