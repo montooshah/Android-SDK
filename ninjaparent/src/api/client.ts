@@ -58,9 +58,27 @@ async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> {
   return res.json()
 }
 
+export interface ParentProfile {
+  name: string
+  email: string
+  childCount: number
+  children: Array<{ name: string; year: string; school: string }>
+}
+
 export const api = {
   getDashboard: () => apiFetch<DashboardData>('/api/dashboard'),
   getConnections: () => apiFetch<{ connections: ConnectionInfo[]; configured: { gmail: boolean; outlook: boolean } }>('/api/connections'),
+  getOnboardingStatus: () => apiFetch<{ onboarded: boolean; profile: { name: string; email: string } | null }>('/api/onboarding/status'),
+  saveOnboarding: (profile: ParentProfile) =>
+    apiFetch<{ ok: boolean }>('/api/onboarding', {
+      method: 'POST',
+      body: JSON.stringify({
+        name: profile.name,
+        email: profile.email,
+        children: profile.children,
+      }),
+    }),
+  completeOnboarding: () => apiFetch<{ ok: boolean }>('/api/onboarding/complete', { method: 'POST' }),
   sync: () => apiFetch<{ synced: number; itemsCreated: number }>('/api/sync', { method: 'POST' }),
   completeItem: (id: string) => apiFetch<{ ok: boolean }>(`/api/action-items/${id}/complete`, { method: 'POST' }),
   disconnect: (id: string) => apiFetch<{ ok: boolean }>(`/api/connections/${id}`, { method: 'DELETE' }),

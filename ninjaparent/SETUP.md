@@ -10,7 +10,12 @@ npm install
 npm run dev:all
 ```
 
-Open **http://localhost:5173** → click **Connect Gmail** or **Connect Outlook** → **Sync now**.
+Open **http://localhost:5173** → complete the **sign-up flow** (name, children, connect Gmail/Outlook) → dashboard.
+
+On first launch (especially on mobile), you'll see a 3-step onboarding:
+1. **Welcome** — parent name & email
+2. **Your children** — add kids for email matching
+3. **Connect** — Gmail and/or Outlook integration
 
 ---
 

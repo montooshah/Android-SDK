@@ -73,6 +73,15 @@ db.exec(`
   CREATE INDEX IF NOT EXISTS idx_emails_connection ON emails(connection_id);
   CREATE INDEX IF NOT EXISTS idx_action_items_child ON action_items(child_id);
   CREATE INDEX IF NOT EXISTS idx_action_items_completed ON action_items(completed);
+
+  CREATE TABLE IF NOT EXISTS profile (
+    id INTEGER PRIMARY KEY CHECK (id = 1),
+    parent_name TEXT NOT NULL,
+    parent_email TEXT NOT NULL,
+    onboarded INTEGER NOT NULL DEFAULT 0,
+    created_at INTEGER NOT NULL DEFAULT (unixepoch()),
+    updated_at INTEGER NOT NULL DEFAULT (unixepoch())
+  );
 `)
 
 export function seedDefaultChildren() {

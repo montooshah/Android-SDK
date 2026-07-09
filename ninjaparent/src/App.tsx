@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react'
 import { api } from './api/client'
 import { useConnections, useDashboard } from './hooks/useDashboard'
+import { useOnboardingGate } from './hooks/useOnboarding'
+import { OnboardingFlow } from './components/onboarding/OnboardingFlow'
 import { Header } from './components/Header'
 import { Sidebar, type FilterType } from './components/Sidebar'
 import { PriorityFeed } from './components/PriorityFeed'
@@ -14,6 +16,7 @@ function App() {
   const [activeFilter, setActiveFilter] = useState<FilterType>('all')
   const [authMessage, setAuthMessage] = useState<string | null>(null)
 
+  const { showOnboarding, complete: completeOnboardingGate, loading: onboardingLoading } = useOnboardingGate()
   const { data, loading, syncing, error, sync, completeItem, refresh } = useDashboard()
   const { connections, refresh: refreshConnections } = useConnections()
 
@@ -50,16 +53,34 @@ function App() {
     await refreshConnections()
   }
 
+  if (onboardingLoading) {
+    return (
+      <div className="flex min-h-dvh items-center justify-center bg-brand-50">
+        <p className="text-slate-500">Loading…</p>
+      </div>
+    )
+  }
+
+  if (showOnboarding) {
+    return (
+      <OnboardingFlow
+        onComplete={completeOnboardingGate}
+        authMessage={authMessage}
+        onAuthMessageClear={() => setAuthMessage(null)}
+      />
+    )
+  }
+
   if (loading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-slate-50">
+      <div className="flex min-h-dvh items-center justify-center bg-slate-50">
         <p className="text-slate-500">Loading dashboard…</p>
       </div>
     )
   }
 
   return (
-    <div className="flex min-h-screen flex-col bg-slate-50">
+    <div className="flex min-h-dvh flex-col bg-slate-50">
       <Header />
       <div className="flex flex-1 flex-col lg:flex-row">
         <Sidebar
@@ -69,8 +90,8 @@ function App() {
           onSelectChild={setSelectedChild}
           onSelectFilter={setActiveFilter}
         />
-        <main className="flex-1 overflow-y-auto p-6">
-          <div className="mx-auto max-w-4xl space-y-8">
+        <main className="flex-1 overflow-y-auto p-4 sm:p-6">
+          <div className="mx-auto max-w-4xl space-y-6 sm:space-y-8">
             {error && (
               <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
                 {error} — is the API server running? Try <code>npm run dev:all</code>

@@ -47,3 +47,12 @@ body {
 .animate-pulse-soft {
   animation: pulse-soft 2s ease-in-out infinite;
 }
+
+/* Mobile safe areas for onboarding */
+.onboarding-safe-bottom {
+  padding-bottom: max(1rem, env(safe-area-inset-bottom));
+}
+
+.onboarding-safe-top {
+  padding-top: max(1rem, env(safe-area-inset-top));
+}

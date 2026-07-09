@@ -199,6 +199,82 @@ export function createApp() {
     res.json({ ok: true })
   })
 
+  app.get('/api/onboarding/status', (_req, res) => {
+    const profile = db.prepare('SELECT parent_name, parent_email, onboarded FROM profile WHERE id = 1').get() as
+      | { parent_name: string; parent_email: string; onboarded: number }
+      | undefined
+    res.json({
+      onboarded: profile?.onboarded === 1,
+      profile: profile
+        ? { name: profile.parent_name, email: profile.parent_email }
+        : null,
+    })
+  })
+
+  app.post('/api/onboarding', (req, res) => {
+    const { name, email, children } = req.body as {
+      name?: string
+      email?: string
+      children?: Array<{ name: string; year?: string; school?: string }>
+    }
+
+    if (!name?.trim() || !email?.trim()) {
+      return res.status(400).json({ error: 'Name and email are required' })
+    }
+
+    const existing = db.prepare('SELECT id FROM profile WHERE id = 1').get()
+    if (existing) {
+      db.prepare(`
+        UPDATE profile SET parent_name = ?, parent_email = ?, updated_at = unixepoch() WHERE id = 1
+      `).run(name.trim(), email.trim())
+    } else {
+      db.prepare(`
+        INSERT INTO profile (id, parent_name, parent_email, onboarded) VALUES (1, ?, ?, 0)
+      `).run(name.trim(), email.trim())
+    }
+
+    if (children?.length) {
+      const colors = ['#8B5CF6', '#3B82F6', '#EC4899', '#F59E0B']
+      db.prepare('DELETE FROM children').run()
+      const insert = db.prepare(`
+        INSERT INTO children (id, name, year, school, color, avatar, keywords)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
+      `)
+      for (let i = 0; i < children.length; i++) {
+        const c = children[i]
+        const childName = c.name.trim()
+        const keywords = JSON.stringify([
+          childName.toLowerCase(),
+          (c.year || '').toLowerCase(),
+          (c.school || '').toLowerCase(),
+        ].filter(Boolean))
+        insert.run(
+          randomUUID(),
+          childName,
+          c.year?.trim() || '',
+          c.school?.trim() || '',
+          colors[i % colors.length],
+          childName.charAt(0).toUpperCase(),
+          keywords,
+        )
+      }
+    }
+
+    res.json({ ok: true })
+  })
+
+  app.post('/api/onboarding/complete', (_req, res) => {
+    const existing = db.prepare('SELECT id FROM profile WHERE id = 1').get()
+    if (existing) {
+      db.prepare('UPDATE profile SET onboarded = 1, updated_at = unixepoch() WHERE id = 1').run()
+    } else {
+      db.prepare(`
+        INSERT INTO profile (id, parent_name, parent_email, onboarded) VALUES (1, 'Parent', '', 1)
+      `).run()
+    }
+    res.json({ ok: true })
+  })
+
   return app
 }
 
