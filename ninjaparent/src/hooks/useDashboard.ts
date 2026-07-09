@@ -8,6 +8,7 @@ import {
   getProfileDashboard,
 } from '../api/demoFallback'
 import { isApiUnreachableError, isDemoMode, isForceDemoMode, setFallbackDemo } from '../lib/demoMode'
+import { patchDashboardAfterComplete } from '../lib/aiBrief'
 
 export function useDashboard() {
   const [data, setData] = useState<DashboardData | null>(null)
@@ -74,20 +75,12 @@ export function useDashboard() {
 
   const completeItem = useCallback(async (id: string) => {
     if (isDemoMode()) {
-      setData((prev) =>
-        prev
-          ? { ...prev, actionItems: prev.actionItems.filter((item) => item.id !== id) }
-          : prev,
-      )
+      setData((prev) => (prev ? patchDashboardAfterComplete(prev, id) : prev))
       return
     }
 
     await api.completeItem(id)
-    setData((prev) =>
-      prev
-        ? { ...prev, actionItems: prev.actionItems.filter((item) => item.id !== id) }
-        : prev,
-    )
+    setData((prev) => (prev ? patchDashboardAfterComplete(prev, id) : prev))
   }, [])
 
   return { data, loading, syncing, error, refresh, sync, completeItem }

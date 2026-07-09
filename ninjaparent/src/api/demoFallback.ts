@@ -1,5 +1,6 @@
 import { actionItems, children, weekStats } from '../data/mockData'
 import { getProfile, isOnboardingComplete } from '../lib/onboarding'
+import { computeDailyBrief } from '../lib/aiBrief'
 
 export const DEMO_CONNECTIONS = [
   {
@@ -32,7 +33,7 @@ export function getDemoDashboard() {
       hasConnections: true,
       emailsThisWeek: 24,
       usingLiveData: true,
-      aiBrief: buildTemplateBrief(actionItems, children),
+      aiBrief: computeDailyBrief(actionItems, children),
       llmEnabled: true,
     },
   }
@@ -104,21 +105,4 @@ export function getProfileAuth() {
     email: profile?.email || '',
     onboarded: isOnboardingComplete(),
   }
-}
-
-function buildTemplateBrief(
-  items: typeof actionItems,
-  kids: typeof children,
-): string {
-  if (items.length === 0) return 'All clear for now — enjoy the calm before the next school email wave.'
-
-  const critical = items.filter((i) => i.urgency === 'critical' || i.urgency === 'high')
-  const top = items[0]
-  const child = kids.find((c) => c.id === top.childId)
-
-  if (critical.length > 1) {
-    return `${critical.length} urgent items today — start with ${child?.name ?? 'your child'}'s "${top.title}". ${top.dueLabel}.`
-  }
-
-  return `${child?.name ?? 'Your child'}'s "${top.title}" is priority one — ${top.dueLabel.toLowerCase()}. ${top.amount ? `${top.amount} due.` : ''} ${top.priorityReason.split('·')[0]?.trim() ?? ''}`
 }
