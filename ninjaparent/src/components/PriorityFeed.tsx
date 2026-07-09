@@ -11,6 +11,7 @@ interface PriorityFeedProps {
   selectedChild: string | null
   activeFilter: FilterType
   onComplete: (id: string) => void
+  onPrimaryAction?: (item: ActionItem) => void
   hasConnections: boolean
   compact?: boolean
 }
@@ -21,6 +22,7 @@ export function PriorityFeed({
   selectedChild,
   activeFilter,
   onComplete,
+  onPrimaryAction,
   hasConnections,
   compact = false,
 }: PriorityFeedProps) {
@@ -81,6 +83,7 @@ export function PriorityFeed({
               child={childMap.get(item.childId)}
               index={index}
               onComplete={onComplete}
+              onPrimaryAction={onPrimaryAction}
             />
           ))
         )}

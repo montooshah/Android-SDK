@@ -102,8 +102,9 @@
     <p class="badge">Seed round · July 2026</p>
     <img class="logo" src="logo.svg" alt="NinjaParent logo" width="88" height="88" />
     <h1>NinjaParent</h1>
-    <p class="subtitle">The parent OS for school life. Try the live demo — no install, no localhost needed.</p>
-    <a class="app-cta" href="/app/?demo=1" id="app-link">Open the demo app →</a>
+    <p class="subtitle">The parent OS for school life. Try the demo instantly, or deploy the API for real Gmail & Outlook.</p>
+    <a class="app-cta" href="/app/?demo=1" id="app-link-demo">Try demo app →</a>
+    <a class="app-cta" href="/app/" id="app-link-live" style="margin-left:0.75rem;background:transparent;color:#f4f2ed;border:1px solid rgba(255,255,255,0.25);">Live app →</a>
   </section>
   <div class="grid">
     <a href="deck/"><div><strong>Pitch deck</strong><span>10 slides — problem, market, ask</span></div><span class="arrow">→</span></a>
@@ -114,7 +115,8 @@
   <footer>NinjaParent investor hub · Not the parent app</footer>
   <script>
     if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') {
-      document.getElementById('app-link').href = 'http://localhost:5173/?demo=1';
+      document.getElementById('app-link-demo').href = 'http://localhost:5173/?demo=1';
+      document.getElementById('app-link-live').href = 'http://localhost:5173/';
     }
   </script>
 </body>

@@ -35,6 +35,7 @@ export interface ActionItem {
   priorityReason: string
   amount?: string
   actionLabel: string
+  actionUrl?: string
   completed?: boolean
 }
 

@@ -1,10 +1,15 @@
 import { useEffect, useState } from 'react'
 import { api } from './api/client'
 import { saveSessionToken } from './lib/session'
-import { isDemoMode } from './lib/demoMode'
+import { isDemoMode, isForceDemoMode } from './lib/demoMode'
+import { checkApiHealth } from './lib/apiStatus'
+import { getActionUrl } from './lib/actionUrls'
+import { connectGmail, connectOutlook } from './lib/connect'
+import { sourceLabels } from './lib/constants'
 import { useAuth } from './hooks/useAuth'
 import { useConnections, useDashboard } from './hooks/useDashboard'
 import { useOnboardingGate } from './hooks/useOnboarding'
+import { useToast } from './hooks/useToast'
 import { OnboardingFlow } from './components/onboarding/OnboardingFlow'
 import { BottomNav, type AppTab } from './components/layout/BottomNav'
 import { MobileHeader } from './components/layout/MobileHeader'
@@ -14,6 +19,8 @@ import { PriorityFeed } from './components/PriorityFeed'
 import { WeekOverview } from './components/WeekOverview'
 import { SettingsView } from './components/SettingsView'
 import { Sidebar } from './components/Sidebar'
+import { Toast } from './components/Toast'
+import { DemoBanner } from './components/DemoBanner'
 import type { ActionItem, Child, WeekStat } from './types'
 
 function LoadingScreen() {
@@ -30,11 +37,17 @@ function App() {
   const [selectedChild, setSelectedChild] = useState<string | null>(null)
   const [activeFilter, setActiveFilter] = useState<FilterType>('all')
   const [authMessage, setAuthMessage] = useState<string | null>(null)
+  const [apiReady, setApiReady] = useState(false)
 
+  const { message: toastMessage, show: showToast } = useToast()
   const { user, loading: authLoading, logout, refresh: refreshAuth } = useAuth()
   const { showOnboarding, complete: completeOnboardingGate, loading: onboardingLoading } = useOnboardingGate()
   const { data, loading, syncing, error, sync, completeItem, refresh } = useDashboard()
-  const { connections, refresh: refreshConnections } = useConnections()
+  const { connections, refresh: refreshConnections, connectDemo, disconnectDemo } = useConnections()
+
+  useEffect(() => {
+    checkApiHealth().finally(() => setApiReady(true))
+  }, [])
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
@@ -72,9 +85,25 @@ function App() {
     await refreshAuth()
   }
 
+  const handleDemoConnect = (provider: 'gmail' | 'outlook') => {
+    connectDemo(provider)
+    refreshConnections()
+    showToast(`${provider === 'gmail' ? 'Gmail' : 'Outlook'} connected (demo)`)
+  }
+
+  const handleConnectGmail = () => {
+    connectGmail(() => handleDemoConnect('gmail'))
+  }
+
+  const handleConnectOutlook = () => {
+    connectOutlook(() => handleDemoConnect('outlook'))
+  }
+
   const handleDisconnect = async (id: string) => {
     if (isDemoMode()) {
+      disconnectDemo(id)
       await refreshConnections()
+      showToast('Account disconnected (demo)')
       return
     }
     await api.disconnect(id)
@@ -82,15 +111,48 @@ function App() {
     await refreshConnections()
   }
 
-  if (onboardingLoading || authLoading) return <LoadingScreen />
+  const handlePrimaryAction = (item: ActionItem) => {
+    const url = getActionUrl(item)
+    const label = sourceLabels[item.source] || item.actionLabel
+
+    if (isDemoMode()) {
+      if (url) {
+        showToast(`Demo: opening ${label}…`)
+        window.open(url, '_blank', 'noopener,noreferrer')
+      } else {
+        showToast(`Demo: ${item.actionLabel}`)
+      }
+      return
+    }
+
+    if (url) {
+      window.open(url, '_blank', 'noopener,noreferrer')
+    } else {
+      showToast(item.actionLabel)
+    }
+  }
+
+  const switchToLiveMode = () => {
+    const params = new URLSearchParams(window.location.search)
+    params.delete('demo')
+    const qs = params.toString()
+    window.location.href = window.location.pathname + (qs ? `?${qs}` : '')
+  }
+
+  if (!apiReady || onboardingLoading || authLoading) return <LoadingScreen />
 
   if (showOnboarding) {
     return (
-      <OnboardingFlow
-        onComplete={handleOnboardingComplete}
-        authMessage={authMessage}
-        onAuthMessageClear={() => setAuthMessage(null)}
-      />
+      <>
+        <OnboardingFlow
+          onComplete={handleOnboardingComplete}
+          authMessage={authMessage}
+          onAuthMessageClear={() => setAuthMessage(null)}
+          onConnectGmail={handleConnectGmail}
+          onConnectOutlook={handleConnectOutlook}
+        />
+        <Toast message={toastMessage} />
+      </>
     )
   }
 
@@ -98,6 +160,8 @@ function App() {
 
   return (
     <div className="app-canvas min-h-dvh">
+      <Toast message={toastMessage} />
+
       {/* Mobile layout */}
       <div className="lg:hidden">
         <MobileHeader
@@ -108,6 +172,7 @@ function App() {
 
         {tab === 'today' && (
           <div className="content-safe-bottom space-y-4 pt-2">
+            <DemoBanner onTryLive={isForceDemoMode() ? switchToLiveMode : undefined} />
             {error && (
               <p className="mx-5 rounded-xl bg-coral-soft px-4 py-3 text-sm text-coral">{error}</p>
             )}
@@ -121,6 +186,7 @@ function App() {
                 selectedChild={selectedChild}
                 activeFilter={activeFilter}
                 onComplete={completeItem}
+                onPrimaryAction={handlePrimaryAction}
                 hasConnections={data?.meta.hasConnections ?? false}
                 compact
               />
@@ -130,6 +196,7 @@ function App() {
 
         {tab === 'kids' && (
           <div className="content-safe-bottom space-y-4 pt-4">
+            <DemoBanner onTryLive={isForceDemoMode() ? switchToLiveMode : undefined} />
             <ChildChips children={children} selected={selectedChild} onSelect={setSelectedChild} />
             <div className="px-5">
               {children.filter((c) => c.id !== 'unassigned').map((child) => {
@@ -168,13 +235,14 @@ function App() {
 
         {tab === 'settings' && (
           <div className="content-safe-bottom pt-2">
+            <DemoBanner onTryLive={isForceDemoMode() ? switchToLiveMode : undefined} />
             <SettingsView
               parentName={user?.name}
               parentEmail={user?.email}
               connections={connections?.connections ?? []}
               configured={connections?.configured ?? { gmail: false, outlook: false }}
-              onConnectGmail={() => api.connectGmail()}
-              onConnectOutlook={() => api.connectOutlook()}
+              onConnectGmail={handleConnectGmail}
+              onConnectOutlook={handleConnectOutlook}
               onDisconnect={handleDisconnect}
               onSync={sync}
               onLogout={logout}
@@ -190,11 +258,14 @@ function App() {
       <div className="hidden min-h-dvh lg:flex lg:flex-col">
         <header className="glass-header border-b border-black/5 px-8 py-5">
           <div className="mx-auto flex max-w-6xl items-center justify-between">
-            <div>
-              <p className="text-sm text-ink-muted">NinjaParent</p>
-              <h1 className="font-display text-2xl font-semibold text-ink">
-                {user?.name ? `${user.name.split(' ')[0]}'s dashboard` : 'Dashboard'}
-              </h1>
+            <div className="flex items-center gap-3">
+              <img src="/logo.svg" alt="" className="h-10 w-10 rounded-xl" />
+              <div>
+                <p className="text-sm text-ink-muted">NinjaParent</p>
+                <h1 className="font-display text-2xl font-semibold text-ink">
+                  {user?.name ? `${user.name.split(' ')[0]}'s dashboard` : 'Dashboard'}
+                </h1>
+              </div>
             </div>
             <button
               type="button"
@@ -215,6 +286,7 @@ function App() {
           />
           <main className="flex-1 overflow-y-auto p-8">
             <div className="space-y-6">
+              <DemoBanner onTryLive={isForceDemoMode() ? switchToLiveMode : undefined} />
               <WeekOverview stats={weekStats} />
               <PriorityFeed
                 items={actionItems}
@@ -222,6 +294,7 @@ function App() {
                 selectedChild={selectedChild}
                 activeFilter={activeFilter}
                 onComplete={completeItem}
+                onPrimaryAction={handlePrimaryAction}
                 hasConnections={data?.meta.hasConnections ?? false}
               />
             </div>

@@ -1,0 +1,38 @@
+# Deploy NinjaParent API to Render (free tier works for demos)
+# https://render.com/docs/blueprint-spec
+
+services:
+  - type: web
+    name: ninjaparent-api
+    runtime: docker
+    dockerfilePath: ./ninjaparent/Dockerfile
+    dockerContext: ./ninjaparent
+    plan: free
+    healthCheckPath: /api/health
+    disk:
+      name: ninjaparent-data
+      mountPath: /data
+      sizeGB: 1
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3001
+      - key: DATABASE_PATH
+        value: /data/ninjaparent.db
+      - key: FRONTEND_URL
+        sync: false
+      - key: GOOGLE_CLIENT_ID
+        sync: false
+      - key: GOOGLE_CLIENT_SECRET
+        sync: false
+      - key: GOOGLE_REDIRECT_URI
+        sync: false
+      - key: MICROSOFT_CLIENT_ID
+        sync: false
+      - key: MICROSOFT_CLIENT_SECRET
+        sync: false
+      - key: MICROSOFT_TENANT_ID
+        value: common
+      - key: MICROSOFT_REDIRECT_URI
+        sync: false

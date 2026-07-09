@@ -9,6 +9,8 @@ const SITE = path.join(ROOT, 'site')
 const INVESTOR = path.join(ROOT, 'investor-site')
 const NINJA = path.join(ROOT, 'ninjaparent')
 
+const API_URL = (process.env.NINJAPARENT_API_URL || '').replace(/\/$/, '')
+
 async function main() {
   console.log('Building parent app for /app/...')
   execSync('npm run build', {
@@ -34,10 +36,15 @@ async function main() {
   await cp(path.join(ROOT, 'pitch-deck', 'one-pager.html'), path.join(SITE, 'deck', 'one-pager.html'))
 
   await writeFile(path.join(SITE, 'app', '_redirects'), '/*    /app/index.html   200\n')
-  await writeFile(
-    path.join(SITE, '_redirects'),
-    '/app/*  /app/index.html  200\n',
-  )
+
+  const redirectLines = ['/app/*  /app/index.html  200']
+  if (API_URL) {
+    redirectLines.unshift(`/api/*  ${API_URL}/api/:splat  200`)
+    console.log(`API proxy → ${API_URL}`)
+  } else {
+    console.warn('NINJAPARENT_API_URL not set — Gmail/Outlook OAuth will not work on Netlify')
+  }
+  await writeFile(path.join(SITE, '_redirects'), redirectLines.join('\n') + '\n')
 
   const pdfPath = path.join(ROOT, 'pitch-deck', 'NinjaParent-Investor-One-Pager.pdf')
   try {
@@ -57,6 +64,7 @@ async function main() {
   console.log(`Site built at ${SITE}`)
   console.log('  Investor hub → /')
   console.log('  Parent app   → /app/')
+  if (!API_URL) console.log('  Tip: set NINJAPARENT_API_URL before build:site for live OAuth')
 }
 
 main().catch((err) => {

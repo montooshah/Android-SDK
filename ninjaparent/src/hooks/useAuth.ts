@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { api } from '../api/client'
 import { getDemoAuth } from '../api/demoFallback'
 import { clearSessionToken, getSessionToken } from '../lib/session'
-import { enableDemoMode, isApiUnreachableError, isDemoMode } from '../lib/demoMode'
+import { isApiUnreachableError, isDemoMode, setFallbackDemo } from '../lib/demoMode'
 
 export function useAuth() {
   const [user, setUser] = useState<{ name: string; email: string; onboarded: boolean } | null>(null)
@@ -18,10 +18,11 @@ export function useAuth() {
     try {
       const me = await api.getMe()
       setUser({ name: me.name, email: me.email, onboarded: me.onboarded })
+      setFallbackDemo(false)
       return me
     } catch (err) {
       if (isApiUnreachableError(err)) {
-        enableDemoMode()
+        setFallbackDemo(true)
         const demo = getDemoAuth()
         setUser(demo)
         return demo
@@ -39,7 +40,10 @@ export function useAuth() {
 
   const logout = useCallback(async () => {
     if (isDemoMode()) {
-      window.location.href = window.location.pathname + '?demo=1'
+      const params = new URLSearchParams(window.location.search)
+      params.delete('demo')
+      const qs = params.toString()
+      window.location.href = window.location.pathname + (qs ? `?${qs}` : '')
       return
     }
 

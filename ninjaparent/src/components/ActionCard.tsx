@@ -7,9 +7,10 @@ interface ActionCardProps {
   child?: Child
   index: number
   onComplete: (id: string) => void
+  onPrimaryAction?: (item: ActionItem) => void
 }
 
-export function ActionCard({ item, index, onComplete, child }: ActionCardProps) {
+export function ActionCard({ item, index, onComplete, onPrimaryAction, child }: ActionCardProps) {
   const type = typeConfig[item.type]
   const urgency = urgencyConfig[item.urgency]
   const Icon = type.icon
@@ -78,6 +79,7 @@ export function ActionCard({ item, index, onComplete, child }: ActionCardProps) 
           <button
             type="button"
             data-testid={`action-btn-${item.id}`}
+            onClick={() => onPrimaryAction?.(item)}
             className="flex-[1.4] rounded-xl bg-brand-700 py-2.5 text-sm font-semibold text-white shadow-md shadow-brand-700/20 active:scale-[0.98]"
           >
             {item.actionLabel}

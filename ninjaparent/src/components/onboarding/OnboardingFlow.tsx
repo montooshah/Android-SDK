@@ -23,9 +23,17 @@ interface OnboardingFlowProps {
   onComplete: (sessionToken?: string) => void
   authMessage?: string | null
   onAuthMessageClear?: () => void
+  onConnectGmail: () => void
+  onConnectOutlook: () => void
 }
 
-export function OnboardingFlow({ onComplete, authMessage, onAuthMessageClear }: OnboardingFlowProps) {
+export function OnboardingFlow({
+  onComplete,
+  authMessage,
+  onAuthMessageClear,
+  onConnectGmail,
+  onConnectOutlook,
+}: OnboardingFlowProps) {
   const saved = getProfile()
   const oauthReturn = isOAuthReturnOnboarding()
   const demoIntegrations = showDemoOnboarding()
@@ -72,12 +80,12 @@ export function OnboardingFlow({ onComplete, authMessage, onAuthMessageClear }: 
 
   const handleConnectGmail = () => {
     setOAuthReturnOnboarding()
-    api.connectGmail()
+    onConnectGmail()
   }
 
   const handleConnectOutlook = () => {
     setOAuthReturnOnboarding()
-    api.connectOutlook()
+    onConnectOutlook()
   }
 
   const handleSync = useCallback(async () => {

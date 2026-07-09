@@ -9,12 +9,26 @@ import { saveConnection, syncAllConnections } from './sync.js'
 import { createSession, destroySession, getSessionUser, touchSession } from './auth.js'
 import type { ActionItemRow, ChildRow, ConnectionRow } from './types.js'
 
-const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:5173'
+const FRONTEND_URLS = (process.env.FRONTEND_URL || 'http://localhost:5173')
+  .split(',')
+  .map((s) => s.trim())
+  .filter(Boolean)
 
 export function createApp() {
   const app = express()
 
-  app.use(cors({ origin: FRONTEND_URL, credentials: true }))
+  app.use(
+    cors({
+      origin(origin, callback) {
+        if (!origin || FRONTEND_URLS.includes(origin)) {
+          callback(null, true)
+        } else {
+          callback(null, false)
+        }
+      },
+      credentials: true,
+    }),
+  )
   app.use(express.json())
   app.use(cookieParser())
 
@@ -58,12 +72,17 @@ export function createApp() {
     }
   })
 
+  function frontendRedirect(path: string) {
+    const base = FRONTEND_URLS[0] || 'http://localhost:5173'
+    return `${base}${path}`
+  }
+
   app.get('/api/auth/google/callback', async (req, res) => {
     try {
       const code = req.query.code as string
       const state = req.query.state as string
       if (!code || !state || oauthStates.get(state)?.provider !== 'gmail') {
-        return res.redirect(`${FRONTEND_URL}?auth=error&message=invalid_state`)
+        return res.redirect(frontendRedirect('?auth=error&message=invalid_state'))
       }
       oauthStates.delete(state)
 
@@ -77,10 +96,10 @@ export function createApp() {
       // Auto-sync on connect
       syncAllConnections().catch(console.error)
 
-      res.redirect(`${FRONTEND_URL}?auth=success&provider=gmail&email=${encodeURIComponent(email)}`)
+      res.redirect(frontendRedirect(`?auth=success&provider=gmail&email=${encodeURIComponent(email)}`))
     } catch (err) {
       console.error(err)
-      res.redirect(`${FRONTEND_URL}?auth=error&message=${encodeURIComponent(err instanceof Error ? err.message : 'oauth_failed')}`)
+      res.redirect(frontendRedirect(`?auth=error&message=${encodeURIComponent(err instanceof Error ? err.message : 'oauth_failed')}`))
     }
   })
 
@@ -99,7 +118,7 @@ export function createApp() {
       const code = req.query.code as string
       const state = req.query.state as string
       if (!code || !state || oauthStates.get(state)?.provider !== 'outlook') {
-        return res.redirect(`${FRONTEND_URL}?auth=error&message=invalid_state`)
+        return res.redirect(frontendRedirect('?auth=error&message=invalid_state'))
       }
       oauthStates.delete(state)
 
@@ -108,10 +127,10 @@ export function createApp() {
 
       syncAllConnections().catch(console.error)
 
-      res.redirect(`${FRONTEND_URL}?auth=success&provider=outlook&email=${encodeURIComponent(email)}`)
+      res.redirect(frontendRedirect(`?auth=success&provider=outlook&email=${encodeURIComponent(email)}`))
     } catch (err) {
       console.error(err)
-      res.redirect(`${FRONTEND_URL}?auth=error&message=${encodeURIComponent(err instanceof Error ? err.message : 'oauth_failed')}`)
+      res.redirect(frontendRedirect(`?auth=error&message=${encodeURIComponent(err instanceof Error ? err.message : 'oauth_failed')}`))
     }
   })
 
