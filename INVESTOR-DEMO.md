@@ -4,17 +4,14 @@ Quick working prototype, pitch deck, demo video, and **live deployment** for VC 
 
 ## Live demo (deployed)
 
-| Resource | URL |
-|----------|-----|
-| **Landing page** | https://magical-beijinho-20ef2b.netlify.app |
-| **Prototype** | https://magical-beijinho-20ef2b.netlify.app/app/ |
-| **Pitch deck** | https://magical-beijinho-20ef2b.netlify.app/deck/ |
-| **One-pager PDF** | https://magical-beijinho-20ef2b.netlify.app/NinjaParent-Investor-One-Pager.pdf |
-| **Narrated video** | https://magical-beijinho-20ef2b.netlify.app/demo/ninjaparent-demo-narrated.mp4 |
+**Parent app** and **investor hub** are now separate:
 
-**Netlify Drop password:** `My-Drop-Site` (required for anonymous deploy — [claim the site](https://app.netlify.com/drop/magical-beijinho-20ef2b) within 60 min to remove password and get a permanent URL)
+| Resource | URL | Notes |
+|----------|-----|-------|
+| **Parent app** | Deploy `ninjaparent/` standalone | `npm run dev:all` → http://localhost:5173 |
+| **Investor hub** | `site/` after `npm run build:site` | Pitch deck, PDF, demo videos only |
 
-**GitHub Pages:** Site pushed to `gh-pages` branch — enable in repo Settings → Pages → branch `gh-pages` for `https://montooshah.github.io/Android-SDK/`
+The investor hub no longer embeds the app at `/app/`. Use the **Open the app** button on the investor landing page.
 
 ## What's included locally
 

@@ -12,6 +12,7 @@ interface PriorityFeedProps {
   activeFilter: FilterType
   onComplete: (id: string) => void
   hasConnections: boolean
+  compact?: boolean
 }
 
 export function PriorityFeed({
@@ -21,6 +22,7 @@ export function PriorityFeed({
   activeFilter,
   onComplete,
   hasConnections,
+  compact = false,
 }: PriorityFeedProps) {
   const filteredItems = useMemo(() => {
     let result = [...items]
@@ -42,41 +44,33 @@ export function PriorityFeed({
     return result.sort((a, b) => b.priorityScore - a.priorityScore)
   }, [items, selectedChild, activeFilter])
 
-  const criticalCount = filteredItems.filter((i) => i.urgency === 'critical').length
   const childMap = useMemo(() => new Map(children.map((c) => [c.id, c])), [children])
 
   return (
-    <div className="space-y-6">
-      <div>
-        <div className="mb-1 flex items-center gap-2">
-          <h2 data-testid="priority-heading" className="font-display text-2xl font-bold text-slate-900">
+    <div className={`space-y-4 ${compact ? '' : 'space-y-6'}`}>
+      {!compact && (
+        <div>
+          <h2 data-testid="priority-heading" className="font-display text-2xl font-semibold text-ink">
             Today&apos;s priorities
           </h2>
-          {criticalCount > 0 && (
-            <span className="animate-pulse-soft rounded-full bg-red-100 px-2.5 py-0.5 text-xs font-semibold text-red-700">
-              {criticalCount} critical
-            </span>
-          )}
+          <p className="mt-1 text-sm text-ink-muted">
+            {hasConnections ? 'From your connected email' : 'Connect email in Settings'}
+          </p>
         </div>
-        <p className="text-sm text-slate-500">
-          {hasConnections
-            ? 'AI-ranked actions from your connected email accounts'
-            : 'Connect email to populate this feed with real school messages'}
-        </p>
-      </div>
+      )}
 
       <AIInsight items={filteredItems} />
 
-      <div data-testid="action-feed" className="space-y-4">
+      <div data-testid="action-feed" className="space-y-3">
         {filteredItems.length === 0 ? (
-          <div className="rounded-2xl border border-dashed border-slate-200 bg-slate-50 p-12 text-center">
-            <p className="font-medium text-slate-600">
-              {hasConnections ? 'All caught up!' : 'No school emails synced yet'}
+          <div className="rounded-2xl border-2 border-dashed border-black/8 bg-white/50 px-6 py-14 text-center">
+            <p className="font-display text-lg font-semibold text-ink">
+              {hasConnections ? 'All clear' : 'Connect your email'}
             </p>
-            <p className="mt-1 text-sm text-slate-400">
+            <p className="mt-2 text-sm text-ink-muted">
               {hasConnections
-                ? 'No actions match your current filters.'
-                : 'Connect Gmail or Outlook above, then click Sync now.'}
+                ? 'Nothing matches these filters right now.'
+                : 'Go to Settings to link Gmail or Outlook.'}
             </p>
           </div>
         ) : (

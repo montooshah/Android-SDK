@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NinjaParent — Investor Hub</title>
+  <meta name="description" content="Investor materials for NinjaParent — pitch deck, demo video, one-pager." />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,600;9..144,700&display=swap" rel="stylesheet" />
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'DM Sans', sans-serif;
+      min-height: 100vh;
+      background: #0a3831;
+      color: #f4f2ed;
+    }
+    .hero {
+      padding: 4rem 1.5rem 3rem;
+      text-align: center;
+      background:
+        radial-gradient(ellipse 80% 60% at 50% -10%, rgba(62, 168, 150, 0.35), transparent),
+        #0a3831;
+    }
+    .badge {
+      display: inline-block;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #a3d9cf;
+      margin-bottom: 1rem;
+    }
+    h1 {
+      font-family: 'Fraunces', serif;
+      font-size: clamp(2.5rem, 8vw, 4rem);
+      font-weight: 700;
+      line-height: 1.1;
+      margin-bottom: 1rem;
+    }
+    .subtitle {
+      font-size: 1.1rem;
+      color: rgba(244, 242, 237, 0.75);
+      max-width: 32rem;
+      margin: 0 auto 2rem;
+      line-height: 1.6;
+    }
+    .app-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: #f4f2ed;
+      color: #0a3831;
+      font-weight: 600;
+      padding: 0.9rem 1.75rem;
+      border-radius: 999px;
+      text-decoration: none;
+      margin-bottom: 3rem;
+      transition: transform 0.2s;
+    }
+    .app-cta:hover { transform: translateY(-2px); }
+    .grid {
+      max-width: 640px;
+      margin: 0 auto;
+      padding: 0 1.5rem 4rem;
+      display: grid;
+      gap: 0.75rem;
+    }
+    .grid a {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.25rem 1.5rem;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 1rem;
+      color: #f4f2ed;
+      text-decoration: none;
+      transition: background 0.2s;
+    }
+    .grid a:hover { background: rgba(255,255,255,0.1); }
+    .grid a strong { font-family: 'Fraunces', serif; font-size: 1.05rem; display: block; }
+    .grid a span { font-size: 0.85rem; color: rgba(244,242,237,0.55); margin-top: 0.2rem; display: block; }
+    .arrow { opacity: 0.4; font-size: 1.25rem; }
+    footer {
+      text-align: center;
+      padding: 2rem;
+      font-size: 0.8rem;
+      color: rgba(244,242,237,0.35);
+      border-top: 1px solid rgba(255,255,255,0.06);
+    }
+  </style>
+</head>
+<body>
+  <section class="hero">
+    <p class="badge">Seed round · July 2026</p>
+    <h1>NinjaParent</h1>
+    <p class="subtitle">The parent OS for school life. Investor materials and live product are separate — use the app for the real experience.</p>
+    <a class="app-cta" href="https://app.ninjaparent.com" id="app-link">Open the app →</a>
+  </section>
+  <div class="grid">
+    <a href="deck/"><div><strong>Pitch deck</strong><span>10 slides — problem, market, ask</span></div><span class="arrow">→</span></a>
+    <a href="NinjaParent-Investor-One-Pager.pdf"><div><strong>One-pager PDF</strong><span>Printable investor summary</span></div><span class="arrow">→</span></a>
+    <a href="demo/ninjaparent-demo-narrated.mp4"><div><strong>Demo video</strong><span>Narrated product walkthrough</span></div><span class="arrow">→</span></a>
+    <a href="demo/ninjaparent-demo.mp4"><div><strong>Demo video (silent)</strong><span>Screen recording only</span></div><span class="arrow">→</span></a>
+  </div>
+  <footer>NinjaParent investor hub · Not the parent app</footer>
+  <script>
+    // Local dev: point app link to localhost
+    if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') {
+      document.getElementById('app-link').href = 'http://localhost:5173';
+    }
+  </script>
+</body>
+</html>

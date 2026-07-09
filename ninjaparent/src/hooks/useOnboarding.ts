@@ -1,32 +1,55 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { api } from '../api/client'
-import { isOnboardingComplete } from '../lib/onboarding'
+import { getSessionToken, saveSessionToken } from '../lib/session'
+import { isOnboardingComplete, completeOnboarding as markLocalComplete } from '../lib/onboarding'
 
 export function useOnboardingGate() {
   const [showOnboarding, setShowOnboarding] = useState<boolean | null>(null)
 
   useEffect(() => {
     async function check() {
-      if (isOnboardingComplete()) {
-        setShowOnboarding(false)
-        return
-      }
+      const hasLocal = isOnboardingComplete()
+      const hasToken = !!getSessionToken()
+
       try {
+        if (hasToken) {
+          const me = await api.getMe()
+          if (me.onboarded) {
+            markLocalComplete()
+            setShowOnboarding(false)
+            return
+          }
+        }
+
         const status = await api.getOnboardingStatus()
-        if (status.onboarded) {
+        if (status.onboarded || status.authenticated) {
+          markLocalComplete()
+          setShowOnboarding(false)
+          return
+        }
+
+        if (hasLocal) {
+          setShowOnboarding(false)
+          return
+        }
+
+        setShowOnboarding(true)
+      } catch {
+        if (hasLocal || hasToken) {
           setShowOnboarding(false)
         } else {
           setShowOnboarding(true)
         }
-      } catch {
-        // API down — use local flag only
-        setShowOnboarding(!isOnboardingComplete())
       }
     }
     check()
   }, [])
 
-  const complete = () => setShowOnboarding(false)
+  const complete = useCallback(async (sessionToken?: string) => {
+    if (sessionToken) saveSessionToken(sessionToken)
+    markLocalComplete()
+    setShowOnboarding(false)
+  }, [])
 
   return { showOnboarding, complete, loading: showOnboarding === null }
 }

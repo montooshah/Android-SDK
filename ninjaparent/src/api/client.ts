@@ -1,5 +1,7 @@
 const API_BASE = import.meta.env.VITE_API_URL || ''
 
+import { getSessionToken } from '../lib/session'
+
 export interface DashboardData {
   children: Array<{
     id: string
@@ -42,14 +44,28 @@ export interface ConnectionInfo {
   items: number
 }
 
+export interface ParentProfile {
+  name: string
+  email: string
+  childCount: number
+  children: Array<{ name: string; year: string; school: string }>
+}
+
 async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> {
+  const token = getSessionToken()
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json',
+    ...(init?.headers as Record<string, string>),
+  }
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`
+    headers['X-Session-Token'] = token
+  }
+
   const res = await fetch(`${API_BASE}${path}`, {
     credentials: 'include',
     ...init,
-    headers: {
-      'Content-Type': 'application/json',
-      ...init?.headers,
-    },
+    headers,
   })
   if (!res.ok) {
     const body = await res.json().catch(() => ({}))
@@ -58,17 +74,12 @@ async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> {
   return res.json()
 }
 
-export interface ParentProfile {
-  name: string
-  email: string
-  childCount: number
-  children: Array<{ name: string; year: string; school: string }>
-}
-
 export const api = {
+  getMe: () => apiFetch<{ name: string; email: string; onboarded: boolean; sessionToken?: string }>('/api/auth/me'),
+  logout: () => apiFetch<{ ok: boolean }>('/api/auth/logout', { method: 'POST' }),
   getDashboard: () => apiFetch<DashboardData>('/api/dashboard'),
   getConnections: () => apiFetch<{ connections: ConnectionInfo[]; configured: { gmail: boolean; outlook: boolean } }>('/api/connections'),
-  getOnboardingStatus: () => apiFetch<{ onboarded: boolean; profile: { name: string; email: string } | null }>('/api/onboarding/status'),
+  getOnboardingStatus: () => apiFetch<{ onboarded: boolean; authenticated: boolean; profile: { name: string; email: string } | null }>('/api/onboarding/status'),
   saveOnboarding: (profile: ParentProfile) =>
     apiFetch<{ ok: boolean }>('/api/onboarding', {
       method: 'POST',
@@ -78,7 +89,7 @@ export const api = {
         children: profile.children,
       }),
     }),
-  completeOnboarding: () => apiFetch<{ ok: boolean }>('/api/onboarding/complete', { method: 'POST' }),
+  completeOnboarding: () => apiFetch<{ ok: boolean; sessionToken?: string }>('/api/onboarding/complete', { method: 'POST' }),
   sync: () => apiFetch<{ synced: number; itemsCreated: number }>('/api/sync', { method: 'POST' }),
   completeItem: (id: string) => apiFetch<{ ok: boolean }>(`/api/action-items/${id}/complete`, { method: 'POST' }),
   disconnect: (id: string) => apiFetch<{ ok: boolean }>(`/api/connections/${id}`, { method: 'DELETE' }),

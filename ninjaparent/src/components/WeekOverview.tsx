@@ -1,12 +1,4 @@
-import { AlertTriangle, BookOpen, Calendar, CreditCard } from 'lucide-react'
 import type { WeekStat } from '../types'
-
-const iconMap = {
-  alert: AlertTriangle,
-  payment: CreditCard,
-  homework: BookOpen,
-  event: Calendar,
-}
 
 interface WeekOverviewProps {
   stats: WeekStat[]
@@ -14,25 +6,16 @@ interface WeekOverviewProps {
 
 export function WeekOverview({ stats }: WeekOverviewProps) {
   return (
-    <div data-testid="week-overview" className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-      {stats.map((stat) => {
-        const Icon = iconMap[stat.icon as keyof typeof iconMap]
-        return (
-          <div
-            key={stat.label}
-            className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm"
-          >
-            <div className="mb-2 flex items-center justify-between">
-              <Icon className="h-5 w-5 text-brand-600" />
-              {stat.trend && (
-                <span className="text-xs text-slate-400">{stat.trend}</span>
-              )}
-            </div>
-            <p className="font-display text-2xl font-bold text-slate-900">{stat.value}</p>
-            <p className="text-sm text-slate-500">{stat.label}</p>
-          </div>
-        )
-      })}
+    <div data-testid="week-overview" className="grid grid-cols-2 gap-2.5 px-5">
+      {stats.map((stat) => (
+        <div key={stat.label} className="card-elevated px-4 py-3.5">
+          <p className="font-display text-2xl font-semibold tabular-nums text-ink">{stat.value}</p>
+          <p className="mt-0.5 text-xs font-medium text-ink-muted">{stat.label}</p>
+          {stat.trend && (
+            <p className="mt-1 truncate text-[10px] text-ink-faint">{stat.trend}</p>
+          )}
+        </div>
+      ))}
     </div>
   )
 }

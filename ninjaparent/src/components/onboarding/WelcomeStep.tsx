@@ -34,8 +34,8 @@ export function WelcomeStep({ initialName = '', initialEmail = '', onNext }: Wel
             <path d="M12 4v16M4 8l8 4 8-4" />
           </svg>
         </div>
-        <h1 className="font-display text-3xl font-bold text-slate-900">Welcome to NinjaParent</h1>
-        <p className="mt-2 text-base text-slate-600">
+        <h1 className="font-display text-3xl font-semibold tracking-tight text-ink">Welcome to NinjaParent</h1>
+        <p className="mt-2 text-base leading-relaxed text-ink-muted">
           School life, unified. One place for homework, payments, trips, and everything your kids&apos; schools send.
         </p>
       </div>
@@ -98,7 +98,7 @@ export function WelcomeStep({ initialName = '', initialEmail = '', onNext }: Wel
           <button
             type="submit"
             data-testid="onboarding-next-welcome"
-            className="flex w-full items-center justify-center gap-2 rounded-2xl bg-brand-600 py-4 text-base font-semibold text-white shadow-lg shadow-brand-600/25 active:scale-[0.98]"
+            className="flex w-full items-center justify-center gap-2 rounded-2xl bg-brand-700 py-4 text-base font-semibold text-white shadow-lg shadow-brand-700/25 active:scale-[0.98]"
           >
             Get started
             <ArrowRight className="h-5 w-5" />

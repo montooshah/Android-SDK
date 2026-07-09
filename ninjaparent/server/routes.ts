@@ -6,6 +6,7 @@ import { db } from './db.js'
 import { getGoogleAuthUrl, exchangeGoogleCode } from './gmail.js'
 import { getMicrosoftAuthUrl, exchangeMicrosoftCode } from './outlook.js'
 import { saveConnection, syncAllConnections } from './sync.js'
+import { createSession, destroySession, getSessionUser, touchSession } from './auth.js'
 import type { ActionItemRow, ChildRow, ConnectionRow } from './types.js'
 
 const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:5173'
@@ -31,6 +32,20 @@ export function createApp() {
 
   app.get('/api/health', (_req, res) => {
     res.json({ ok: true, integrations: { gmail: !!process.env.GOOGLE_CLIENT_ID, outlook: !!process.env.MICROSOFT_CLIENT_ID } })
+  })
+
+  app.get('/api/auth/me', (req, res) => {
+    const user = getSessionUser(req)
+    if (!user) {
+      return res.status(401).json({ error: 'Not authenticated' })
+    }
+    touchSession(req)
+    res.json({ name: user.name, email: user.email, onboarded: user.onboarded })
+  })
+
+  app.post('/api/auth/logout', (req, res) => {
+    destroySession(req, res)
+    res.json({ ok: true })
   })
 
   app.get('/api/auth/google', (_req, res) => {
@@ -199,14 +214,16 @@ export function createApp() {
     res.json({ ok: true })
   })
 
-  app.get('/api/onboarding/status', (_req, res) => {
+  app.get('/api/onboarding/status', (req, res) => {
+    const user = getSessionUser(req)
     const profile = db.prepare('SELECT parent_name, parent_email, onboarded FROM profile WHERE id = 1').get() as
       | { parent_name: string; parent_email: string; onboarded: number }
       | undefined
     res.json({
-      onboarded: profile?.onboarded === 1,
-      profile: profile
-        ? { name: profile.parent_name, email: profile.parent_email }
+      onboarded: user?.onboarded || profile?.onboarded === 1,
+      authenticated: !!user,
+      profile: profile || user
+        ? { name: profile?.parent_name || user?.name || '', email: profile?.parent_email || user?.email || '' }
         : null,
     })
   })
@@ -263,16 +280,23 @@ export function createApp() {
     res.json({ ok: true })
   })
 
-  app.post('/api/onboarding/complete', (_req, res) => {
-    const existing = db.prepare('SELECT id FROM profile WHERE id = 1').get()
-    if (existing) {
+  app.post('/api/onboarding/complete', (req, res) => {
+    const profile = db.prepare('SELECT parent_name, parent_email FROM profile WHERE id = 1').get() as
+      | { parent_name: string; parent_email: string }
+      | undefined
+
+    if (profile) {
       db.prepare('UPDATE profile SET onboarded = 1, updated_at = unixepoch() WHERE id = 1').run()
     } else {
       db.prepare(`
         INSERT INTO profile (id, parent_name, parent_email, onboarded) VALUES (1, 'Parent', '', 1)
       `).run()
     }
-    res.json({ ok: true })
+
+    const p = profile || { parent_name: 'Parent', parent_email: '' }
+    const sessionToken = createSession(res, { name: p.parent_name, email: p.parent_email })
+
+    res.json({ ok: true, sessionToken })
   })
 
   return app

@@ -19,7 +19,7 @@ import { IntegrationsStep } from './IntegrationsStep'
 const STEPS = ['Welcome', 'Children', 'Connect']
 
 interface OnboardingFlowProps {
-  onComplete: () => void
+  onComplete: (sessionToken?: string) => void
   authMessage?: string | null
   onAuthMessageClear?: () => void
 }
@@ -93,23 +93,25 @@ export function OnboardingFlow({ onComplete, authMessage, onAuthMessageClear }: 
       try {
         await api.sync()
       } catch {
-        // continue to dashboard
+        // continue
       }
     }
+    let sessionToken: string | undefined
     try {
-      await api.completeOnboarding()
+      const result = await api.completeOnboarding()
+      sessionToken = result.sessionToken
     } catch {
       // local complete still works
     }
     completeOnboarding()
+    onComplete(sessionToken)
     onAuthMessageClear?.()
-    onComplete()
   }, [connections, onComplete, onAuthMessageClear])
 
   return (
     <div
       data-testid="onboarding-flow"
-      className="flex min-h-dvh flex-col bg-gradient-to-b from-brand-50 via-white to-slate-50"
+      className="flex min-h-dvh flex-col bg-[#f4f2ed]"
     >
       {/* Progress header */}
       <header className="px-6 pt-6 onboarding-safe-top">
