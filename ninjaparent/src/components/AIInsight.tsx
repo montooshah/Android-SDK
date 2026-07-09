@@ -1,6 +1,27 @@
 import { Sparkles } from 'lucide-react'
+import type { ActionItem } from '../types'
 
-export function AIInsight() {
+interface AIInsightProps {
+  items: ActionItem[]
+}
+
+export function AIInsight({ items }: AIInsightProps) {
+  const critical = items.filter((i) => i.urgency === 'critical')
+  const payments = items.filter((i) => i.type === 'payment')
+  const top = items[0]
+
+  const summary = top
+    ? critical.length > 0
+      ? `You have ${critical.length} critical item${critical.length > 1 ? 's' : ''} today. Top priority: "${top.title}".`
+      : `Your queue has ${items.length} school action${items.length !== 1 ? 's' : ''}. Next up: "${top.title}".`
+    : 'Connect Gmail or Outlook and sync to see AI-prioritized school actions here.'
+
+  const tip = payments.length >= 2
+    ? `Consider batching ${payments.length} Parent Pay items together.`
+    : items.length > 0
+      ? `Est. ${Math.max(3, Math.ceil(items.length * 2.5))} min to clear your queue.`
+      : undefined
+
   return (
     <div
       data-testid="ai-insight"
@@ -12,22 +33,21 @@ export function AIInsight() {
         </div>
         <div>
           <p className="font-display text-sm font-semibold text-brand-900">AI Priority Insight</p>
-          <p className="text-xs text-brand-600">Updated 2 minutes ago</p>
+          <p className="text-xs text-brand-600">From your real school emails</p>
         </div>
       </div>
-      <p className="text-sm leading-relaxed text-slate-700">
-        <strong className="text-slate-900">Busy afternoon ahead.</strong> Noah&apos;s trip payment
-        is your #1 priority — deadline tomorrow and he can&apos;t attend without it. Lily&apos;s
-        coding club closes Friday with limited places. Consider batching both Parent Pay items
-        together to save time.
-      </p>
+      <p className="text-sm leading-relaxed text-slate-700">{summary}</p>
       <div className="mt-4 flex flex-wrap gap-2">
-        <span className="rounded-full bg-white px-3 py-1 text-xs font-medium text-brand-700 ring-1 ring-brand-200">
-          3 critical items today
-        </span>
-        <span className="rounded-full bg-white px-3 py-1 text-xs font-medium text-slate-600 ring-1 ring-slate-200">
-          Est. 12 min to clear queue
-        </span>
+        {critical.length > 0 && (
+          <span className="rounded-full bg-white px-3 py-1 text-xs font-medium text-red-700 ring-1 ring-red-200">
+            {critical.length} critical today
+          </span>
+        )}
+        {tip && (
+          <span className="rounded-full bg-white px-3 py-1 text-xs font-medium text-slate-600 ring-1 ring-slate-200">
+            {tip}
+          </span>
+        )}
       </div>
     </div>
   )

@@ -1,5 +1,5 @@
 import { AlertTriangle, BookOpen, Calendar, CreditCard } from 'lucide-react'
-import { weekStats } from '../data/mockData'
+import type { WeekStat } from '../types'
 
 const iconMap = {
   alert: AlertTriangle,
@@ -8,10 +8,14 @@ const iconMap = {
   event: Calendar,
 }
 
-export function WeekOverview() {
+interface WeekOverviewProps {
+  stats: WeekStat[]
+}
+
+export function WeekOverview({ stats }: WeekOverviewProps) {
   return (
     <div data-testid="week-overview" className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-      {weekStats.map((stat) => {
+      {stats.map((stat) => {
         const Icon = iconMap[stat.icon as keyof typeof iconMap]
         return (
           <div

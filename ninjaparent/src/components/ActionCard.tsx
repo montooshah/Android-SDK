@@ -1,22 +1,18 @@
 import { Check, Sparkles } from 'lucide-react'
-import type { ActionItem } from '../types'
-import { getChildById } from '../data/mockData'
-import { ChildBadge } from './ChildBadge'
+import type { ActionItem, Child } from '../types'
 import { sourceLabels, typeConfig, urgencyConfig } from '../lib/constants'
 
 interface ActionCardProps {
   item: ActionItem
+  child?: Child
   index: number
   onComplete: (id: string) => void
 }
 
-export function ActionCard({ item, index, onComplete }: ActionCardProps) {
-  const child = getChildById(item.childId)
+export function ActionCard({ item, index, onComplete, child }: ActionCardProps) {
   const type = typeConfig[item.type]
   const urgency = urgencyConfig[item.urgency]
   const Icon = type.icon
-
-  if (!child) return null
 
   return (
     <article
@@ -46,7 +42,17 @@ export function ActionCard({ item, index, onComplete }: ActionCardProps) {
             <h3 className="font-display text-base font-semibold text-slate-900">{item.title}</h3>
             <p className="mt-1 text-sm text-slate-600">{item.description}</p>
             <div className="mt-3 flex flex-wrap items-center gap-3">
-              <ChildBadge child={child} />
+              {child && (
+                <div className="flex items-center gap-2">
+                  <div
+                    className="flex h-6 w-6 items-center justify-center rounded-full text-xs font-semibold text-white"
+                    style={{ backgroundColor: child.color }}
+                  >
+                    {child.avatar}
+                  </div>
+                  <span className="text-sm font-medium text-slate-900">{child.name}</span>
+                </div>
+              )}
               <div className="flex items-center gap-1.5 text-xs text-brand-700">
                 <Sparkles className="h-3.5 w-3.5" />
                 <span>{item.priorityReason}</span>

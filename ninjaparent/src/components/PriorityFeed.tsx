@@ -1,19 +1,29 @@
-import { useMemo, useState } from 'react'
-import { actionItems as initialItems } from '../data/mockData'
+import { useMemo } from 'react'
+import type { ActionItem, Child } from '../types'
 import { ActionCard } from './ActionCard'
 import { AIInsight } from './AIInsight'
 
+type FilterType = 'all' | 'payment' | 'homework' | 'event' | 'overdue'
+
 interface PriorityFeedProps {
+  items: ActionItem[]
+  children: Child[]
   selectedChild: string | null
-  activeFilter: string
+  activeFilter: FilterType
+  onComplete: (id: string) => void
+  hasConnections: boolean
 }
 
-export function PriorityFeed({ selectedChild, activeFilter }: PriorityFeedProps) {
-  const [items] = useState(initialItems)
-  const [completedIds, setCompletedIds] = useState<Set<string>>(new Set())
-
+export function PriorityFeed({
+  items,
+  children,
+  selectedChild,
+  activeFilter,
+  onComplete,
+  hasConnections,
+}: PriorityFeedProps) {
   const filteredItems = useMemo(() => {
-    let result = items.filter((item) => !completedIds.has(item.id))
+    let result = [...items]
 
     if (selectedChild) {
       result = result.filter((item) => item.childId === selectedChild)
@@ -29,14 +39,11 @@ export function PriorityFeed({ selectedChild, activeFilter }: PriorityFeedProps)
       result = result.filter((item) => item.type === 'deadline_missed')
     }
 
-    return [...result].sort((a, b) => b.priorityScore - a.priorityScore)
-  }, [items, selectedChild, activeFilter, completedIds])
-
-  const handleComplete = (id: string) => {
-    setCompletedIds((prev) => new Set([...prev, id]))
-  }
+    return result.sort((a, b) => b.priorityScore - a.priorityScore)
+  }, [items, selectedChild, activeFilter])
 
   const criticalCount = filteredItems.filter((i) => i.urgency === 'critical').length
+  const childMap = useMemo(() => new Map(children.map((c) => [c.id, c])), [children])
 
   return (
     <div className="space-y-6">
@@ -52,25 +59,34 @@ export function PriorityFeed({ selectedChild, activeFilter }: PriorityFeedProps)
           )}
         </div>
         <p className="text-sm text-slate-500">
-          AI-ranked actions across all your kids and school apps
+          {hasConnections
+            ? 'AI-ranked actions from your connected email accounts'
+            : 'Connect email to populate this feed with real school messages'}
         </p>
       </div>
 
-      <AIInsight />
+      <AIInsight items={filteredItems} />
 
       <div data-testid="action-feed" className="space-y-4">
         {filteredItems.length === 0 ? (
           <div className="rounded-2xl border border-dashed border-slate-200 bg-slate-50 p-12 text-center">
-            <p className="font-medium text-slate-600">All caught up!</p>
-            <p className="mt-1 text-sm text-slate-400">No actions match your current filters.</p>
+            <p className="font-medium text-slate-600">
+              {hasConnections ? 'All caught up!' : 'No school emails synced yet'}
+            </p>
+            <p className="mt-1 text-sm text-slate-400">
+              {hasConnections
+                ? 'No actions match your current filters.'
+                : 'Connect Gmail or Outlook above, then click Sync now.'}
+            </p>
           </div>
         ) : (
           filteredItems.map((item, index) => (
             <ActionCard
               key={item.id}
               item={item}
+              child={childMap.get(item.childId)}
               index={index}
-              onComplete={handleComplete}
+              onComplete={onComplete}
             />
           ))
         )}
@@ -78,3 +94,5 @@ export function PriorityFeed({ selectedChild, activeFilter }: PriorityFeedProps)
     </div>
   )
 }
+
+export type { FilterType }

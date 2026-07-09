@@ -20,4 +20,7 @@ demo/narration.mp3
 site/
 ninjaparent/node_modules/
 ninjaparent/dist/
+ninjaparent/dist-server/
+ninjaparent/data/
+ninjaparent/.env
 node_modules/

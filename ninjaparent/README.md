@@ -1,12 +1,15 @@
 # NinjaParent Prototype
 
-Interactive investor demo — AI-prioritized school communication dashboard.
+School communication dashboard with **real Gmail and Outlook integration**.
 
 ```bash
+cp .env.example .env   # add OAuth credentials — see SETUP.md
 npm install
-npm run dev      # http://localhost:5173
-npm run build    # production build
-npm run demo:record  # re-record demo video
+npm run dev:all        # frontend :5173 + API :3001
 ```
 
-See `/INVESTOR-DEMO.md` for the full investor package.
+- `npm run dev` — frontend only
+- `npm run dev:api` — API server only
+- `npm run build` — production frontend build
+
+See **SETUP.md** for Gmail/Outlook OAuth setup.
