@@ -65,7 +65,7 @@ export function WelcomeStep({ initialName = '', initialEmail = '', onNext }: Wel
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder="Sarah Johnson"
+              placeholder="e.g. Alex Morgan"
               autoComplete="name"
               className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3.5 text-base text-slate-900 outline-none ring-brand-500 focus:border-brand-500 focus:ring-2"
             />
@@ -80,7 +80,7 @@ export function WelcomeStep({ initialName = '', initialEmail = '', onNext }: Wel
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="sarah@email.com"
+              placeholder="you@email.com"
               autoComplete="email"
               className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3.5 text-base text-slate-900 outline-none ring-brand-500 focus:border-brand-500 focus:ring-2"
             />

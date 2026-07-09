@@ -1,18 +1,27 @@
 import { useCallback, useEffect, useState } from 'react'
 import { api } from '../api/client'
-import { getDemoAuth } from '../api/demoFallback'
+import { getDemoAuth, getProfileAuth } from '../api/demoFallback'
 import { clearSessionToken, getSessionToken } from '../lib/session'
-import { isApiUnreachableError, isDemoMode, setFallbackDemo } from '../lib/demoMode'
+import { isApiUnreachableError, isDemoMode, isForceDemoMode, setFallbackDemo } from '../lib/demoMode'
+import { useSignOut } from './useOnboarding'
 
 export function useAuth() {
   const [user, setUser] = useState<{ name: string; email: string; onboarded: boolean } | null>(null)
   const [loading, setLoading] = useState(true)
+  const signOut = useSignOut()
 
   const refresh = useCallback(async () => {
-    if (isDemoMode()) {
+    if (isForceDemoMode()) {
       setUser(getDemoAuth())
       setLoading(false)
       return getDemoAuth()
+    }
+
+    if (isDemoMode()) {
+      const profile = getProfileAuth()
+      setUser(profile)
+      setLoading(false)
+      return profile
     }
 
     try {
@@ -23,9 +32,9 @@ export function useAuth() {
     } catch (err) {
       if (isApiUnreachableError(err)) {
         setFallbackDemo(true)
-        const demo = getDemoAuth()
-        setUser(demo)
-        return demo
+        const profile = getProfileAuth()
+        setUser(profile)
+        return profile
       }
       setUser(null)
       return null
@@ -39,22 +48,12 @@ export function useAuth() {
   }, [refresh])
 
   const logout = useCallback(async () => {
-    if (isDemoMode()) {
-      const params = new URLSearchParams(window.location.search)
-      params.delete('demo')
-      const qs = params.toString()
-      window.location.href = window.location.pathname + (qs ? `?${qs}` : '')
-      return
-    }
-
-    try {
+    await signOut(async () => {
       await api.logout()
-    } finally {
       clearSessionToken()
       setUser(null)
-      window.location.reload()
-    }
-  }, [])
+    })
+  }, [signOut])
 
   return { user, loading, refresh, logout, hasStoredSession: !!getSessionToken() }
 }

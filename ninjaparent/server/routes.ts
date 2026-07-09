@@ -7,6 +7,7 @@ import { getGoogleAuthUrl, exchangeGoogleCode } from './gmail.js'
 import { getMicrosoftAuthUrl, exchangeMicrosoftCode } from './outlook.js'
 import { saveConnection, syncAllConnections } from './sync.js'
 import { createSession, destroySession, getSessionUser, touchSession } from './auth.js'
+import { generateDailyBrief, buildEmailUrl } from './llm.js'
 import type { ActionItemRow, ChildRow, ConnectionRow } from './types.js'
 
 const FRONTEND_URLS = (process.env.FRONTEND_URL || 'http://localhost:5173')
@@ -172,7 +173,7 @@ export function createApp() {
     }
   })
 
-  app.get('/api/dashboard', (_req, res) => {
+  app.get('/api/dashboard', async (_req, res) => {
     const children = (db.prepare('SELECT * FROM children ORDER BY name').all() as ChildRow[]).map((c) => ({
       id: c.id,
       name: c.name,
@@ -182,9 +183,19 @@ export function createApp() {
       avatar: c.avatar,
     }))
 
-    const items = (db.prepare(`
-      SELECT * FROM action_items WHERE completed = 0 ORDER BY priority_score DESC
-    `).all() as ActionItemRow[]).map(mapActionItem)
+    const rows = db.prepare(`
+      SELECT a.*, e.message_id, conn.provider AS mail_provider
+      FROM action_items a
+      LEFT JOIN emails e ON a.email_id = e.id
+      LEFT JOIN connections conn ON e.connection_id = conn.id
+      WHERE a.completed = 0
+      ORDER BY a.priority_score DESC
+    `).all() as Array<ActionItemRow & { message_id?: string; mail_provider?: string }>
+
+    const items = rows.map((row) => ({
+      ...mapActionItem(row),
+      emailUrl: buildEmailUrl(row.mail_provider, row.message_id) ?? undefined,
+    }))
 
     if (items.some((i) => i.childId === 'unassigned')) {
       children.push({
@@ -216,6 +227,16 @@ export function createApp() {
     const connections = db.prepare('SELECT COUNT(*) as c FROM connections').get() as { c: number }
     const emailCount = db.prepare('SELECT COUNT(*) as c FROM emails WHERE received_at >= ?').get(weekAgo) as { c: number }
 
+    const childNames = new Map(children.map((c) => [c.id, c.name]))
+    const aiBrief = await generateDailyBrief(
+      items.map((i) => ({
+        title: i.title,
+        dueLabel: i.dueLabel,
+        urgency: i.urgency,
+        childName: childNames.get(i.childId),
+      })),
+    )
+
     res.json({
       children,
       actionItems: items,
@@ -224,6 +245,8 @@ export function createApp() {
         hasConnections: connections.c > 0,
         emailsThisWeek: emailCount.c,
         usingLiveData: connections.c > 0,
+        aiBrief,
+        llmEnabled: !!process.env.OPENAI_API_KEY,
       },
     })
   })
@@ -270,32 +293,20 @@ export function createApp() {
     }
 
     if (children?.length) {
-      const colors = ['#8B5CF6', '#3B82F6', '#EC4899', '#F59E0B']
-      db.prepare('DELETE FROM children').run()
-      const insert = db.prepare(`
-        INSERT INTO children (id, name, year, school, color, avatar, keywords)
-        VALUES (?, ?, ?, ?, ?, ?, ?)
-      `)
-      for (let i = 0; i < children.length; i++) {
-        const c = children[i]
-        const childName = c.name.trim()
-        const keywords = JSON.stringify([
-          childName.toLowerCase(),
-          (c.year || '').toLowerCase(),
-          (c.school || '').toLowerCase(),
-        ].filter(Boolean))
-        insert.run(
-          randomUUID(),
-          childName,
-          c.year?.trim() || '',
-          c.school?.trim() || '',
-          colors[i % colors.length],
-          childName.charAt(0).toUpperCase(),
-          keywords,
-        )
-      }
+      saveChildren(children)
     }
 
+    res.json({ ok: true })
+  })
+
+  app.put('/api/children', (req, res) => {
+    const { children } = req.body as {
+      children?: Array<{ name: string; year?: string; school?: string }>
+    }
+    if (!children?.length) {
+      return res.status(400).json({ error: 'At least one child is required' })
+    }
+    saveChildren(children)
     res.json({ ok: true })
   })
 
@@ -319,6 +330,31 @@ export function createApp() {
   })
 
   return app
+}
+
+function saveChildren(children: Array<{ name: string; year?: string; school?: string }>) {
+  const colors = ['#8B5CF6', '#3B82F6', '#EC4899', '#F59E0B']
+  db.prepare('DELETE FROM children').run()
+  const insert = db.prepare(`
+    INSERT INTO children (id, name, year, school, color, avatar, keywords)
+    VALUES (?, ?, ?, ?, ?, ?, ?)
+  `)
+  for (let i = 0; i < children.length; i++) {
+    const c = children[i]
+    const childName = c.name.trim()
+    const keywords = JSON.stringify(
+      [childName.toLowerCase(), (c.year || '').toLowerCase(), (c.school || '').toLowerCase()].filter(Boolean),
+    )
+    insert.run(
+      randomUUID(),
+      childName,
+      c.year?.trim() || '',
+      c.school?.trim() || '',
+      colors[i % colors.length],
+      childName.charAt(0).toUpperCase(),
+      keywords,
+    )
+  }
 }
 
 function mapActionItem(row: ActionItemRow) {

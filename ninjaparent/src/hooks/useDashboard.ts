@@ -1,7 +1,13 @@
 import { useCallback, useEffect, useState } from 'react'
 import { api, type ConnectionInfo, type DashboardData } from '../api/client'
-import { DEMO_CONNECTIONS, getDemoConnections, getDemoDashboard } from '../api/demoFallback'
-import { isApiUnreachableError, isDemoMode, setFallbackDemo } from '../lib/demoMode'
+import {
+  DEMO_CONNECTIONS,
+  getDemoConnections,
+  getDemoDashboard,
+  getEmptyConnections,
+  getProfileDashboard,
+} from '../api/demoFallback'
+import { isApiUnreachableError, isDemoMode, isForceDemoMode, setFallbackDemo } from '../lib/demoMode'
 
 export function useDashboard() {
   const [data, setData] = useState<DashboardData | null>(null)
@@ -10,8 +16,14 @@ export function useDashboard() {
   const [error, setError] = useState<string | null>(null)
 
   const refresh = useCallback(async () => {
-    if (isDemoMode()) {
+    if (isForceDemoMode()) {
       setData(getDemoDashboard())
+      setLoading(false)
+      return
+    }
+
+    if (isDemoMode()) {
+      setData(getProfileDashboard())
       setLoading(false)
       return
     }
@@ -24,7 +36,7 @@ export function useDashboard() {
     } catch (err) {
       if (isApiUnreachableError(err)) {
         setFallbackDemo(true)
-        setData(getDemoDashboard())
+        setData(getProfileDashboard())
         setError(null)
       } else {
         setError(err instanceof Error ? err.message : 'Failed to load dashboard')
@@ -42,6 +54,9 @@ export function useDashboard() {
     if (isDemoMode()) {
       setSyncing(true)
       await new Promise((r) => setTimeout(r, 1200))
+      if (isForceDemoMode()) {
+        setData(getDemoDashboard())
+      }
       setSyncing(false)
       return
     }
@@ -79,15 +94,26 @@ export function useDashboard() {
 }
 
 export function useConnections() {
-  const [connections, setConnections] = useState<{ connections: ConnectionInfo[]; configured: { gmail: boolean; outlook: boolean } } | null>(null)
-  const [demoConnections, setDemoConnections] = useState<ConnectionInfo[]>(() => getDemoConnections().connections)
+  const [connections, setConnections] = useState<{
+    connections: ConnectionInfo[]
+    configured: { gmail: boolean; outlook: boolean }
+  } | null>(null)
+  const [demoConnections, setDemoConnections] = useState<ConnectionInfo[]>(() =>
+    isForceDemoMode() ? getDemoConnections().connections : [],
+  )
   const [loading, setLoading] = useState(true)
 
   const refresh = useCallback(async () => {
+    if (isForceDemoMode()) {
+      setConnections(getDemoConnections())
+      setLoading(false)
+      return
+    }
+
     if (isDemoMode()) {
       setConnections({
         connections: demoConnections,
-        configured: getDemoConnections().configured,
+        configured: getEmptyConnections().configured,
       })
       setLoading(false)
       return
@@ -102,7 +128,7 @@ export function useConnections() {
         setFallbackDemo(true)
         setConnections({
           connections: demoConnections,
-          configured: getDemoConnections().configured,
+          configured: getEmptyConnections().configured,
         })
       }
     } finally {
@@ -127,10 +153,10 @@ export function useConnections() {
   }, [])
 
   useEffect(() => {
-    if (isDemoMode()) {
+    if (isDemoMode() && !isForceDemoMode()) {
       setConnections({
         connections: demoConnections,
-        configured: getDemoConnections().configured,
+        configured: getEmptyConnections().configured,
       })
     }
   }, [demoConnections])

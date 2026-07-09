@@ -25,6 +25,7 @@ export interface DashboardData {
     priorityReason: string
     amount?: string
     actionLabel: string
+    emailUrl?: string
     completed?: boolean
   }>
   weekStats: Array<{ label: string; value: number; icon: string; trend?: string }>
@@ -32,6 +33,8 @@ export interface DashboardData {
     hasConnections: boolean
     emailsThisWeek: number
     usingLiveData: boolean
+    aiBrief?: string | null
+    llmEnabled?: boolean
   }
 }
 
@@ -93,6 +96,11 @@ export const api = {
   sync: () => apiFetch<{ synced: number; itemsCreated: number }>('/api/sync', { method: 'POST' }),
   completeItem: (id: string) => apiFetch<{ ok: boolean }>(`/api/action-items/${id}/complete`, { method: 'POST' }),
   disconnect: (id: string) => apiFetch<{ ok: boolean }>(`/api/connections/${id}`, { method: 'DELETE' }),
+  saveChildren: (children: ParentProfile['children']) =>
+    apiFetch<{ ok: boolean }>('/api/children', {
+      method: 'PUT',
+      body: JSON.stringify({ children }),
+    }),
   connectGmail: () => { window.location.href = `${API_BASE}/api/auth/google` },
   connectOutlook: () => { window.location.href = `${API_BASE}/api/auth/microsoft` },
 }

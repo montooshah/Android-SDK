@@ -12,7 +12,10 @@ interface PriorityFeedProps {
   activeFilter: FilterType
   onComplete: (id: string) => void
   onPrimaryAction?: (item: ActionItem) => void
+  onOpenEmail?: (item: ActionItem) => void
   hasConnections: boolean
+  aiBrief?: string | null
+  llmEnabled?: boolean
   compact?: boolean
 }
 
@@ -23,7 +26,10 @@ export function PriorityFeed({
   activeFilter,
   onComplete,
   onPrimaryAction,
+  onOpenEmail,
   hasConnections,
+  aiBrief,
+  llmEnabled,
   compact = false,
 }: PriorityFeedProps) {
   const filteredItems = useMemo(() => {
@@ -61,7 +67,7 @@ export function PriorityFeed({
         </div>
       )}
 
-      <AIInsight items={filteredItems} />
+      <AIInsight brief={aiBrief} llmEnabled={llmEnabled} />
 
       <div data-testid="action-feed" className="space-y-3">
         {filteredItems.length === 0 ? (
@@ -84,6 +90,7 @@ export function PriorityFeed({
               index={index}
               onComplete={onComplete}
               onPrimaryAction={onPrimaryAction}
+              onOpenEmail={onOpenEmail}
             />
           ))
         )}

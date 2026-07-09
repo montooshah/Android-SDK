@@ -15,11 +15,13 @@ export function showDemoOnboarding(): boolean {
   return params.get('demo') === '1' && params.get('show') === 'onboarding'
 }
 
+/** Explicit investor demo (?demo=1) — sample Sarah Johnson data */
 export function isForceDemoMode(): boolean {
   if (typeof window === 'undefined') return false
   return isDemoQuery() || localStorage.getItem(DEMO_KEY) === 'true'
 }
 
+/** Demo data (forced or API unreachable after onboarding) */
 export function isDemoMode(): boolean {
   if (typeof window === 'undefined') return false
   return isForceDemoMode() || fallbackDemo

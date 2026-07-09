@@ -1,4 +1,4 @@
-import { Check } from 'lucide-react'
+import { Check, Mail } from 'lucide-react'
 import type { ActionItem, Child } from '../types'
 import { sourceLabels, typeConfig, urgencyConfig } from '../lib/constants'
 
@@ -8,9 +8,10 @@ interface ActionCardProps {
   index: number
   onComplete: (id: string) => void
   onPrimaryAction?: (item: ActionItem) => void
+  onOpenEmail?: (item: ActionItem) => void
 }
 
-export function ActionCard({ item, index, onComplete, onPrimaryAction, child }: ActionCardProps) {
+export function ActionCard({ item, index, onComplete, onPrimaryAction, onOpenEmail, child }: ActionCardProps) {
   const type = typeConfig[item.type]
   const urgency = urgencyConfig[item.urgency]
   const Icon = type.icon
@@ -67,7 +68,19 @@ export function ActionCard({ item, index, onComplete, onPrimaryAction, child }: 
           </span>
         </div>
 
-        <div className="mt-4 flex gap-2">
+        <div className="mt-4 flex flex-col gap-2">
+          {item.emailUrl && (
+            <button
+              type="button"
+              data-testid={`action-email-${item.id}`}
+              onClick={() => onOpenEmail?.(item)}
+              className="flex w-full items-center justify-center gap-1.5 rounded-xl border border-brand-200 bg-brand-50 py-2 text-xs font-semibold text-brand-800 active:bg-brand-100"
+            >
+              <Mail className="h-3.5 w-3.5" />
+              Open in email
+            </button>
+          )}
+          <div className="flex gap-2">
           <button
             type="button"
             onClick={() => onComplete(item.id)}
@@ -84,6 +97,7 @@ export function ActionCard({ item, index, onComplete, onPrimaryAction, child }: 
           >
             {item.actionLabel}
           </button>
+          </div>
         </div>
       </div>
     </article>

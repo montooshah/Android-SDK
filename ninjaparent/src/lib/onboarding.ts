@@ -20,6 +20,13 @@ export function completeOnboarding(): void {
   localStorage.removeItem(OAUTH_RETURN_KEY)
 }
 
+export function resetOnboarding(): void {
+  localStorage.removeItem(ONBOARDING_KEY)
+  localStorage.removeItem(PROFILE_KEY)
+  localStorage.removeItem(ONBOARDING_STEP_KEY)
+  localStorage.removeItem(OAUTH_RETURN_KEY)
+}
+
 export function getSavedStep(): number {
   const step = localStorage.getItem(ONBOARDING_STEP_KEY)
   return step ? parseInt(step, 10) : 0

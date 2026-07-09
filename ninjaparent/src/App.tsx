@@ -111,6 +111,14 @@ function App() {
     await refreshConnections()
   }
 
+  const handleOpenEmail = (item: ActionItem) => {
+    if (item.emailUrl) {
+      window.open(item.emailUrl, '_blank', 'noopener,noreferrer')
+      return
+    }
+    showToast('Email link not available')
+  }
+
   const handlePrimaryAction = (item: ActionItem) => {
     const url = getActionUrl(item)
     const label = sourceLabels[item.source] || item.actionLabel
@@ -187,7 +195,10 @@ function App() {
                 activeFilter={activeFilter}
                 onComplete={completeItem}
                 onPrimaryAction={handlePrimaryAction}
+                onOpenEmail={handleOpenEmail}
                 hasConnections={data?.meta.hasConnections ?? false}
+                aiBrief={data?.meta.aiBrief}
+                llmEnabled={data?.meta.llmEnabled}
                 compact
               />
             </div>
@@ -239,6 +250,7 @@ function App() {
             <SettingsView
               parentName={user?.name}
               parentEmail={user?.email}
+              children={children}
               connections={connections?.connections ?? []}
               configured={connections?.configured ?? { gmail: false, outlook: false }}
               onConnectGmail={handleConnectGmail}
@@ -246,6 +258,8 @@ function App() {
               onDisconnect={handleDisconnect}
               onSync={sync}
               onLogout={logout}
+              onChildrenSaved={refresh}
+              showToast={showToast}
               syncing={syncing}
             />
           </div>
@@ -295,7 +309,10 @@ function App() {
                 activeFilter={activeFilter}
                 onComplete={completeItem}
                 onPrimaryAction={handlePrimaryAction}
+                onOpenEmail={handleOpenEmail}
                 hasConnections={data?.meta.hasConnections ?? false}
+                aiBrief={data?.meta.aiBrief}
+                llmEnabled={data?.meta.llmEnabled}
               />
             </div>
           </main>

@@ -1,9 +1,12 @@
 import { LogOut, Mail, RefreshCw, Shield, Trash2 } from 'lucide-react'
 import type { ConnectionInfo } from '../api/client'
+import type { Child } from '../types'
+import { ChildrenSettings } from './ChildrenSettings'
 
 interface SettingsViewProps {
   parentName?: string
   parentEmail?: string
+  children: Child[]
   connections: ConnectionInfo[]
   configured: { gmail: boolean; outlook: boolean }
   onConnectGmail: () => void
@@ -11,12 +14,15 @@ interface SettingsViewProps {
   onDisconnect: (id: string) => void
   onSync: () => void
   onLogout: () => void
+  onChildrenSaved: () => void
+  showToast: (msg: string) => void
   syncing: boolean
 }
 
 export function SettingsView({
   parentName,
   parentEmail,
+  children,
   connections,
   configured,
   onConnectGmail,
@@ -24,6 +30,8 @@ export function SettingsView({
   onDisconnect,
   onSync,
   onLogout,
+  onChildrenSaved,
+  showToast,
   syncing,
 }: SettingsViewProps) {
   return (
@@ -39,6 +47,8 @@ export function SettingsView({
           </div>
         </div>
       </section>
+
+      <ChildrenSettings children={children} onSaved={onChildrenSaved} showToast={showToast} />
 
       <section data-testid="settings-connections">
         <h2 className="mb-3 px-1 font-display text-sm font-semibold text-ink-muted">Email accounts</h2>

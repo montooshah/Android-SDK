@@ -36,6 +36,7 @@ export interface ActionItem {
   amount?: string
   actionLabel: string
   actionUrl?: string
+  emailUrl?: string
   completed?: boolean
 }
 

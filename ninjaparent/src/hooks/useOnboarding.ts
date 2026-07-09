@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import { api } from '../api/client'
 import { getSessionToken, saveSessionToken } from '../lib/session'
-import { isOnboardingComplete, completeOnboarding as markLocalComplete } from '../lib/onboarding'
+import { isOnboardingComplete, completeOnboarding as markLocalComplete, resetOnboarding } from '../lib/onboarding'
 import {
   enableDemoMode,
   isApiUnreachableError,
@@ -25,6 +25,7 @@ export function useOnboardingGate() {
         return
       }
 
+      // Investor quick demo — skip sign-up, use sample data
       if (isDemoQuery()) {
         enableDemoMode()
         markLocalComplete()
@@ -65,22 +66,12 @@ export function useOnboardingGate() {
       } catch (err) {
         if (isApiUnreachableError(err) || !health?.ok) {
           setFallbackDemo(true)
-          if (hasLocal || hasToken) {
-            setShowOnboarding(false)
-          } else if (!isForceDemoMode()) {
-            markLocalComplete()
-            setShowOnboarding(false)
-          } else {
-            setShowOnboarding(true)
-          }
+          // Always show sign-up for new visitors — never auto-skip to Sarah Johnson
+          setShowOnboarding(!hasLocal && !hasToken)
           return
         }
 
-        if (hasLocal || hasToken) {
-          setShowOnboarding(false)
-        } else {
-          setShowOnboarding(true)
-        }
+        setShowOnboarding(!hasLocal && !hasToken)
       }
     }
     check()
@@ -93,4 +84,24 @@ export function useOnboardingGate() {
   }, [])
 
   return { showOnboarding, complete, loading: showOnboarding === null }
+}
+
+export function useSignOut() {
+  return useCallback(async (logoutApi: () => Promise<void>) => {
+    if (isForceDemoMode()) {
+      const params = new URLSearchParams(window.location.search)
+      params.delete('demo')
+      const qs = params.toString()
+      window.location.href = window.location.pathname + (qs ? `?${qs}` : '')
+      return
+    }
+
+    try {
+      await logoutApi()
+    } catch {
+      // API may be down
+    }
+    resetOnboarding()
+    window.location.href = window.location.pathname
+  }, [])
 }
