@@ -11,18 +11,19 @@ DEMO_DIR = os.path.join(ROOT, "demo")
 EDGE_TTS = os.path.expanduser("~/.local/bin/edge-tts")
 
 SEGMENTS = [
-    (0, "NinjaParent brings school life into one place. Connect Gmail and Outlook once — we read school emails and turn them into clear actions."),
-    (9, "During setup, link the inboxes where newsletters and Parent Pay alerts actually land. Gmail for home, Outlook for work — both stay in sync."),
-    (20, "Your Today view shows what matters now. Trip deposits, homework deadlines, and permission slips — ranked by urgency, not inbox order."),
-    (32, "Filter by child or type. Here's everything for Noah — payments, homework, events — without digging through forty-seven unread emails."),
-    (44, "Tap to mark items done as you go. One queue, one dashboard, every child and every school."),
-    (52, "In Settings, Gmail and Outlook stay connected with read-only access. Your data stays yours — we never send on your behalf."),
-    (63, "Switch between kids in a tap. Lily, Noah, Mia — each with their own school life, all in your pocket."),
-    (72, "NinjaParent. School life, unified."),
+    (0, "Forty-seven school emails. Three kids. Two schools. NinjaParent turns that chaos into one AI-prioritized queue."),
+    (8, "Connect Gmail and Outlook once — every newsletter, Parent Pay alert, and homework reminder flows in automatically."),
+    (18, "The AI daily brief tells you what matters first. Not your inbox order — urgency, deadlines, and consequences."),
+    (28, "Trip deposit due tomorrow — forty-five pounds, scored ninety-eight. Tap Pay now, or jump straight to the original email."),
+    (40, "Filter by child or type. Everything for Noah — payments, homework, overdue — in one tap."),
+    (50, "Mark items done as you go. Critical homework flagged before the teacher sends another reminder."),
+    (58, "Gmail and Outlook stay connected with read-only access. Edit your children anytime — we match emails to the right kid."),
+    (68, "Lily, Noah, Mia — each with their own school life, one dashboard in your pocket."),
+    (76, "NinjaParent. School life, unified. Built with Cursor."),
 ]
 
 VOICE = "en-GB-RyanNeural"
-RATE = "+8%"
+RATE = "+10%"
 
 
 def run(cmd, **kwargs):
@@ -98,7 +99,7 @@ def main():
         run([
             "ffmpeg", "-y", "-i", video_in,
             "-vf", f"tpad=stop_mode=clone:stop_duration={pad}",
-            "-c:v", "libx264", "-preset", "fast", "-crf", "23", "-pix_fmt", "yuv420p",
+            "-c:v", "libx264", "-preset", "fast", "-crf", "22", "-pix_fmt", "yuv420p",
             "-an", extended_video,
         ], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         video_src = extended_video

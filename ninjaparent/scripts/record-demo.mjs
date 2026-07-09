@@ -26,6 +26,10 @@ async function sleep(ms) {
   return new Promise((r) => setTimeout(r, ms))
 }
 
+async function scroll(page, top) {
+  await page.evaluate((y) => window.scrollTo({ top: y, behavior: 'smooth' }), top)
+}
+
 async function main() {
   await mkdir(DEMO_DIR, { recursive: true })
 
@@ -53,52 +57,81 @@ async function main() {
     })
 
     const page = await context.newPage()
+    const mobile = page.locator('.lg\\:hidden')
+    const card = (id) => mobile.getByTestId(`action-card-${id}`)
+    const chips = () => mobile.getByTestId('child-chips')
+    const pills = () => mobile.getByTestId('filter-pills')
 
-    // Onboarding — integrations step with Gmail & Outlook
+    // 1 — Connect Gmail & Outlook (integrations wow)
     await page.goto('http://127.0.0.1:5173/?demo=1&show=onboarding', { waitUntil: 'networkidle' })
     await page.waitForSelector('[data-testid="onboarding-flow"]')
-    await sleep(3500)
-    await page.evaluate(() => window.scrollTo({ top: 120, behavior: 'smooth' }))
-    await sleep(3000)
+    await sleep(4000)
+    await scroll(page, 100)
+    await sleep(2500)
     await page.getByTestId('onboarding-finish').click()
-    await sleep(2500)
+    await sleep(2000)
 
-    // Today dashboard
+    // 2 — AI daily brief + week stats
+    await page.waitForSelector('[data-testid="ai-insight"]')
     await page.waitForSelector('[data-testid="week-overview"]')
-    await sleep(2500)
-    const chips = page.getByTestId('child-chips')
-    const pills = page.getByTestId('filter-pills')
-    await page.evaluate(() => window.scrollTo({ top: 200, behavior: 'smooth' }))
-    await sleep(2500)
-    await chips.getByTestId('filter-child-noah').click()
-    await sleep(2500)
-    await pills.getByTestId('filter-type-payment').click()
-    await sleep(2500)
-    await page.evaluate(() => window.scrollTo({ top: 380, behavior: 'smooth' }))
-    await sleep(2000)
-    await page.getByTestId('action-card-1').getByRole('button', { name: 'Done' }).click()
-    await sleep(2500)
-    await chips.getByTestId('filter-all-kids').click()
-    await sleep(1500)
-    await pills.getByTestId('filter-type-all').click()
-    await sleep(2000)
+    await sleep(4500)
 
-    // Settings — connected Gmail & Outlook
-    await page.getByTestId('tab-settings').click()
-    await page.waitForSelector('[data-testid="settings-connections"]')
+    // 3 — Critical payment card (£45, score 98)
+    await scroll(page, 220)
+    await sleep(2000)
+    await card('1').scrollIntoViewIfNeeded()
     await sleep(3500)
-    await page.evaluate(() => window.scrollTo({ top: 180, behavior: 'smooth' }))
-    await sleep(2500)
-
-    // Kids tab
-    await page.getByTestId('tab-kids').click()
-    await sleep(3000)
-
-    // Back to Today
-    await page.getByTestId('tab-today').click()
+    await mobile.getByTestId('action-email-1').click()
     await sleep(2000)
-    await page.evaluate(() => window.scrollTo({ top: 0, behavior: 'smooth' }))
+    await mobile.getByTestId('action-btn-1').click()
     await sleep(2500)
+
+    // 4 — Filter by child + type
+    await scroll(page, 0)
+    await sleep(1500)
+    await chips().getByTestId('filter-child-noah').click()
+    await sleep(2500)
+    await pills().getByTestId('filter-type-payment').click()
+    await sleep(3000)
+    await card('1').getByRole('button', { name: 'Done' }).click()
+    await sleep(2500)
+    await chips().getByTestId('filter-all-kids').click()
+    await sleep(1200)
+    await pills().getByTestId('filter-type-all').click()
+    await sleep(2000)
+
+    // 5 — Overdue homework (critical)
+    await pills().getByTestId('filter-type-overdue').click()
+    await sleep(2500)
+    await scroll(page, 280)
+    await sleep(3000)
+    await pills().getByTestId('filter-type-all').click()
+    await sleep(1500)
+
+    // 6 — Settings: connected inboxes + children
+    await mobile.getByTestId('tab-settings').click()
+    await page.waitForSelector('[data-testid="settings-connections"]')
+    await sleep(4000)
+    await scroll(page, 320)
+    await page.waitForSelector('[data-testid="settings-children"]')
+    await sleep(3500)
+
+    // 7 — Kids tab (multi-child)
+    await mobile.getByTestId('tab-kids').click()
+    await sleep(3500)
+
+    // 8 — Lily homework filter + AI brief finale
+    await mobile.getByTestId('tab-today').click()
+    await sleep(1500)
+    await scroll(page, 0)
+    await sleep(2000)
+    await chips().getByTestId('filter-child-lily').click()
+    await sleep(2000)
+    await pills().getByTestId('filter-type-homework').click()
+    await sleep(3000)
+    await scroll(page, 0)
+    await page.waitForSelector('[data-testid="ai-insight"]')
+    await sleep(3500)
 
     const video = page.video()
     await context.close()
@@ -110,7 +143,7 @@ async function main() {
 
       const { execSync } = await import('child_process')
       execSync(
-        `ffmpeg -y -i "${webmPath}" -c:v libx264 -preset fast -crf 23 -pix_fmt yuv420p "${mp4Path}"`,
+        `ffmpeg -y -i "${webmPath}" -c:v libx264 -preset fast -crf 22 -pix_fmt yuv420p "${mp4Path}"`,
         { stdio: 'inherit' }
       )
       console.log(`Demo video saved to ${mp4Path}`)

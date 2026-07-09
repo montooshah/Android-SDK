@@ -42,6 +42,7 @@ export const actionItems: ActionItem[] = [
     priorityReason: 'Payment deadline in 24h · child cannot attend trip without it',
     amount: '£45.00',
     actionLabel: 'Pay now',
+    emailUrl: 'https://mail.google.com/mail/u/0/#inbox/demo-trip-payment',
   },
   {
     id: '2',
@@ -70,6 +71,7 @@ export const actionItems: ActionItem[] = [
     priorityScore: 92,
     priorityReason: 'Already overdue · teacher reminder received',
     actionLabel: 'Mark done',
+    emailUrl: 'https://mail.google.com/mail/u/0/#inbox/demo-homework-overdue',
   },
   {
     id: '4',
@@ -112,6 +114,7 @@ export const actionItems: ActionItem[] = [
     priorityScore: 85,
     priorityReason: 'Booking just opened · slots fill fast',
     actionLabel: 'Book slot',
+    emailUrl: 'https://mail.google.com/mail/u/0/#inbox/demo-parents-evening',
   },
   {
     id: '7',

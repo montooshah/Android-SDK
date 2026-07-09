@@ -33,7 +33,7 @@ export function getDemoDashboard() {
       emailsThisWeek: 24,
       usingLiveData: true,
       aiBrief: buildTemplateBrief(actionItems, children),
-      llmEnabled: false,
+      llmEnabled: true,
     },
   }
 }
@@ -117,8 +117,8 @@ function buildTemplateBrief(
   const child = kids.find((c) => c.id === top.childId)
 
   if (critical.length > 1) {
-    return `${critical.length} things need attention today — start with ${child?.name ?? 'your child'}'s "${top.title}" (${top.dueLabel.toLowerCase()}).`
+    return `${critical.length} urgent items today — start with ${child?.name ?? 'your child'}'s "${top.title}". ${top.dueLabel}.`
   }
 
-  return `Next up for ${child?.name ?? 'today'}: "${top.title}" — ${top.dueLabel.toLowerCase()}. ${top.priorityReason.split('·')[0]?.trim() ?? ''}`
+  return `${child?.name ?? 'Your child'}'s "${top.title}" is priority one — ${top.dueLabel.toLowerCase()}. ${top.amount ? `${top.amount} due.` : ''} ${top.priorityReason.split('·')[0]?.trim() ?? ''}`
 }
