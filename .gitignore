@@ -12,3 +12,8 @@ gen
 
 # Mac
 .DS_Store
+
+# NinjaParent demo
+demo/*.webm
+ninjaparent/node_modules/
+ninjaparent/dist/
