@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react'
 import { api } from './api/client'
 import { saveSessionToken } from './lib/session'
-import { isDemoMode, isForceDemoMode } from './lib/demoMode'
+import { disableDemoMode, isDemoMode, isForceDemoMode } from './lib/demoMode'
+import { resetOnboarding } from './lib/onboarding'
 import { checkApiHealth } from './lib/apiStatus'
 import { getActionUrl } from './lib/actionUrls'
 import { connectGmail, connectOutlook } from './lib/connect'
@@ -141,10 +142,9 @@ function App() {
   }
 
   const switchToLiveMode = () => {
-    const params = new URLSearchParams(window.location.search)
-    params.delete('demo')
-    const qs = params.toString()
-    window.location.href = window.location.pathname + (qs ? `?${qs}` : '')
+    resetOnboarding()
+    disableDemoMode()
+    window.location.href = window.location.pathname + '?fresh=1'
   }
 
   if (!apiReady || onboardingLoading || authLoading) return <LoadingScreen />

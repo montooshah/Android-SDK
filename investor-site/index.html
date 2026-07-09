@@ -104,7 +104,7 @@
     <h1>NinjaParent</h1>
     <p class="subtitle">The parent OS for school life. Try the demo instantly, or deploy the API for real Gmail & Outlook.</p>
     <a class="app-cta" href="/app/?demo=1" id="app-link-demo">Try sample demo →</a>
-    <a class="app-cta" href="/app/" id="app-link-live" style="margin-left:0.75rem;background:transparent;color:#f4f2ed;border:1px solid rgba(255,255,255,0.25);">Sign up &amp; connect →</a>
+    <a class="app-cta" href="/app/?fresh=1" id="app-link-live" style="margin-left:0.75rem;background:transparent;color:#f4f2ed;border:1px solid rgba(255,255,255,0.25);">Sign up &amp; connect →</a>
   </section>
   <div class="grid">
     <a href="deck/"><div><strong>Pitch deck</strong><span>10 slides — problem, market, ask</span></div><span class="arrow">→</span></a>
@@ -116,7 +116,7 @@
   <script>
     if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') {
       document.getElementById('app-link-demo').href = 'http://localhost:5173/?demo=1';
-      document.getElementById('app-link-live').href = 'http://localhost:5173/';
+      document.getElementById('app-link-live').href = 'http://localhost:5173/?fresh=1';
     }
   </script>
 </body>

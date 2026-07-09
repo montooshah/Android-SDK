@@ -1,7 +1,5 @@
 /** Demo mode: works without API server (Netlify static hosting, investor demos). */
 
-const DEMO_KEY = 'ninjaparent_demo_mode'
-
 let fallbackDemo = false
 
 export function isDemoQuery(): boolean {
@@ -15,13 +13,12 @@ export function showDemoOnboarding(): boolean {
   return params.get('demo') === '1' && params.get('show') === 'onboarding'
 }
 
-/** Explicit investor demo (?demo=1) — sample Sarah Johnson data */
+/** Sample Sarah Johnson data — only while URL has ?demo=1 */
 export function isForceDemoMode(): boolean {
-  if (typeof window === 'undefined') return false
-  return isDemoQuery() || localStorage.getItem(DEMO_KEY) === 'true'
+  return isDemoQuery()
 }
 
-/** Demo data (forced or API unreachable after onboarding) */
+/** Demo or offline fallback data */
 export function isDemoMode(): boolean {
   if (typeof window === 'undefined') return false
   return isForceDemoMode() || fallbackDemo
@@ -31,13 +28,11 @@ export function setFallbackDemo(active: boolean): void {
   fallbackDemo = active
 }
 
-export function enableDemoMode(): void {
-  localStorage.setItem(DEMO_KEY, 'true')
-  fallbackDemo = true
-}
-
+/** Clear legacy demo flag from older builds */
 export function disableDemoMode(): void {
-  localStorage.removeItem(DEMO_KEY)
+  if (typeof window !== 'undefined') {
+    localStorage.removeItem('ninjaparent_demo_mode')
+  }
   fallbackDemo = false
 }
 

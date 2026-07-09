@@ -3,10 +3,8 @@ import { api } from '../api/client'
 import { getSessionToken, saveSessionToken } from '../lib/session'
 import { isOnboardingComplete, completeOnboarding as markLocalComplete, resetOnboarding } from '../lib/onboarding'
 import {
-  enableDemoMode,
   isApiUnreachableError,
   isDemoQuery,
-  isForceDemoMode,
   setFallbackDemo,
   showDemoOnboarding,
 } from '../lib/demoMode'
@@ -20,15 +18,12 @@ export function useOnboardingGate() {
       const health = await checkApiHealth()
 
       if (showDemoOnboarding()) {
-        enableDemoMode()
         setShowOnboarding(true)
         return
       }
 
-      // Investor quick demo — skip sign-up, use sample data
+      // Investor sample — skip sign-up for this page load only (?demo=1)
       if (isDemoQuery()) {
-        enableDemoMode()
-        markLocalComplete()
         setShowOnboarding(false)
         return
       }
@@ -66,7 +61,6 @@ export function useOnboardingGate() {
       } catch (err) {
         if (isApiUnreachableError(err) || !health?.ok) {
           setFallbackDemo(true)
-          // Always show sign-up for new visitors — never auto-skip to Sarah Johnson
           setShowOnboarding(!hasLocal && !hasToken)
           return
         }
@@ -88,11 +82,8 @@ export function useOnboardingGate() {
 
 export function useSignOut() {
   return useCallback(async (logoutApi: () => Promise<void>) => {
-    if (isForceDemoMode()) {
-      const params = new URLSearchParams(window.location.search)
-      params.delete('demo')
-      const qs = params.toString()
-      window.location.href = window.location.pathname + (qs ? `?${qs}` : '')
+    if (isDemoQuery()) {
+      window.location.href = window.location.pathname
       return
     }
 
