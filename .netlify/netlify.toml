@@ -1,5 +1,6 @@
+headersOrigin = "config"
+redirectsOrigin = "config"
 plugins = []
-headers = []
 
 [functions]
 
@@ -8,7 +9,6 @@ headers = []
 [build]
 publish = "/workspace/site"
 publishOrigin = "default"
-base = "/workspace/site"
 
 [build.environment]
 
@@ -23,6 +23,12 @@ base = "/workspace/site"
 [build.processing.js]
 
 [build.services]
+
+[[headers]]
+for = "/*"
+
+[headers.values]
+Access-Control-Allow-Origin = "*"
 
 [[redirects]]
 from = "/app/*"
