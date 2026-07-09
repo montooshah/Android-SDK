@@ -11,16 +11,18 @@ DEMO_DIR = os.path.join(ROOT, "demo")
 EDGE_TTS = os.path.expanduser("~/.local/bin/edge-tts")
 
 SEGMENTS = [
-    (0, "Meet NinjaParent — the command center for busy parents juggling school life across multiple kids and apps. Sarah has three children at two schools. Gmail, Spider, Parent Pay, and SIMS — all connected, all syncing."),
-    (12, "Instead of 47 unread emails, she sees one prioritized queue. Our AI analyzes every message — deadlines, payments, registrations — and ranks what needs attention right now. Trip payment due tomorrow? That's number one."),
-    (28, "Every card is actionable. Pay now. Register interest. Sign the permission slip. Each shows the child, the source app, the deadline, and why it's prioritized. No more hunting through newsletters for buried deadlines."),
-    (45, "Filter by child instantly. Here's everything for Noah — his overdue maths homework, the science museum trip payment, parents' evening booking. One click, one view."),
-    (58, "Filter by type — payments only, homework only, overdue items. Batch your Parent Pay tasks. Clear the homework queue. NinjaParent adapts to how you work."),
-    (72, "Mark items complete as you go. Switch to Lily — coding club registration closing Friday, spellings due tomorrow. Every child, every school, one dashboard."),
-    (85, "NinjaParent. School life, unified. Never miss what matters."),
+    (0, "NinjaParent brings school life into one place. Connect Gmail and Outlook once — we read school emails and turn them into clear actions."),
+    (9, "During setup, link the inboxes where newsletters and Parent Pay alerts actually land. Gmail for home, Outlook for work — both stay in sync."),
+    (20, "Your Today view shows what matters now. Trip deposits, homework deadlines, and permission slips — ranked by urgency, not inbox order."),
+    (32, "Filter by child or type. Here's everything for Noah — payments, homework, events — without digging through forty-seven unread emails."),
+    (44, "Tap to mark items done as you go. One queue, one dashboard, every child and every school."),
+    (52, "In Settings, Gmail and Outlook stay connected with read-only access. Your data stays yours — we never send on your behalf."),
+    (63, "Switch between kids in a tap. Lily, Noah, Mia — each with their own school life, all in your pocket."),
+    (72, "NinjaParent. School life, unified."),
 ]
 
-VOICE = "en-GB-SoniaNeural"
+VOICE = "en-GB-RyanNeural"
+RATE = "+8%"
 
 
 def run(cmd, **kwargs):
@@ -37,7 +39,7 @@ def get_duration(path):
 
 
 def generate_tts(text, output):
-    run([EDGE_TTS, "--voice", VOICE, "--text", text, "--write-media", output])
+    run([EDGE_TTS, "--voice", VOICE, "--rate", RATE, "--text", text, "--write-media", output])
 
 
 def create_silence(seconds, output):
@@ -90,7 +92,6 @@ def main():
     video_dur = get_duration(video_in)
     print(f"Video duration: {video_dur:.1f}s")
 
-    # Extend video to match narration if needed
     extended_video = os.path.join(work, "extended.mp4")
     if audio_dur > video_dur:
         pad = audio_dur - video_dur + 0.5

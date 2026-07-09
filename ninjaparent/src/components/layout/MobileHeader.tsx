@@ -20,11 +20,14 @@ export function MobileHeader({ parentName, syncing, onSync }: MobileHeaderProps)
   return (
     <header className="glass-header sticky top-0 z-40 onboarding-safe-top">
       <div className="flex items-center justify-between px-5 py-4">
-        <div className="min-w-0 flex-1">
-          <p className="text-sm font-medium text-ink-muted">{getGreeting()}</p>
-          <h1 className="font-display text-2xl font-semibold tracking-tight text-ink">
-            {firstName}
-          </h1>
+        <div className="flex min-w-0 flex-1 items-center gap-3">
+          <img src="/logo.svg" alt="" className="h-10 w-10 shrink-0 rounded-xl shadow-sm" />
+          <div className="min-w-0">
+            <p className="text-sm font-medium text-ink-muted">{getGreeting()}</p>
+            <h1 className="font-display text-2xl font-semibold tracking-tight text-ink">
+              {firstName}
+            </h1>
+          </div>
         </div>
         <div className="flex items-center gap-2">
           {onSync && (

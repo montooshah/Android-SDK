@@ -12,6 +12,7 @@ import {
   clearOAuthReturn,
   type ParentProfile,
 } from '../../lib/onboarding'
+import { showDemoOnboarding } from '../../lib/demoMode'
 import { WelcomeStep } from './WelcomeStep'
 import { KidsStep } from './KidsStep'
 import { IntegrationsStep } from './IntegrationsStep'
@@ -27,7 +28,8 @@ interface OnboardingFlowProps {
 export function OnboardingFlow({ onComplete, authMessage, onAuthMessageClear }: OnboardingFlowProps) {
   const saved = getProfile()
   const oauthReturn = isOAuthReturnOnboarding()
-  const [step, setStep] = useState(oauthReturn ? 2 : getSavedStep())
+  const demoIntegrations = showDemoOnboarding()
+  const [step, setStep] = useState(demoIntegrations || oauthReturn ? 2 : getSavedStep())
   const [profile, setProfile] = useState<Partial<ParentProfile>>(saved ?? {})
   const [syncing, setSyncing] = useState(false)
 
@@ -116,7 +118,10 @@ export function OnboardingFlow({ onComplete, authMessage, onAuthMessageClear }: 
       {/* Progress header */}
       <header className="px-6 pt-6 onboarding-safe-top">
         <div className="flex items-center justify-between">
-          <span className="font-display text-sm font-bold text-brand-700">NinjaParent</span>
+          <div className="flex items-center gap-2">
+            <img src="/logo.svg" alt="" className="h-8 w-8" />
+            <span className="font-display text-sm font-bold text-brand-700">NinjaParent</span>
+          </div>
           <span className="text-xs font-medium text-slate-400">
             Step {step + 1} of {STEPS.length}
           </span>

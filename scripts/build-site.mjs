@@ -25,6 +25,11 @@ async function main() {
   execSync(`cp -r ${path.join(NINJA, 'dist')}/. ${path.join(SITE, 'app')}/`)
 
   await cp(path.join(INVESTOR, 'index.html'), path.join(SITE, 'index.html'))
+  try {
+    await cp(path.join(INVESTOR, 'logo.svg'), path.join(SITE, 'logo.svg'))
+  } catch {
+    // optional
+  }
   await cp(path.join(ROOT, 'pitch-deck', 'index.html'), path.join(SITE, 'deck', 'index.html'))
   await cp(path.join(ROOT, 'pitch-deck', 'one-pager.html'), path.join(SITE, 'deck', 'one-pager.html'))
 

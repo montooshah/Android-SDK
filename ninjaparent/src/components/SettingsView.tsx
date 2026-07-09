@@ -40,7 +40,7 @@ export function SettingsView({
         </div>
       </section>
 
-      <section>
+      <section data-testid="settings-connections">
         <h2 className="mb-3 px-1 font-display text-sm font-semibold text-ink-muted">Email accounts</h2>
         <div className="card-elevated divide-y divide-black/5 overflow-hidden">
           {connections.map((c) => (

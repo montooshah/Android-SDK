@@ -2,12 +2,26 @@ import { useCallback, useEffect, useState } from 'react'
 import { api } from '../api/client'
 import { getSessionToken, saveSessionToken } from '../lib/session'
 import { isOnboardingComplete, completeOnboarding as markLocalComplete } from '../lib/onboarding'
+import { enableDemoMode, isApiUnreachableError, isDemoMode, isDemoQuery, showDemoOnboarding } from '../lib/demoMode'
 
 export function useOnboardingGate() {
   const [showOnboarding, setShowOnboarding] = useState<boolean | null>(null)
 
   useEffect(() => {
     async function check() {
+      if (showDemoOnboarding()) {
+        enableDemoMode()
+        setShowOnboarding(true)
+        return
+      }
+
+      if (isDemoQuery()) {
+        enableDemoMode()
+        markLocalComplete()
+        setShowOnboarding(false)
+        return
+      }
+
       const hasLocal = isOnboardingComplete()
       const hasToken = !!getSessionToken()
 
@@ -34,7 +48,14 @@ export function useOnboardingGate() {
         }
 
         setShowOnboarding(true)
-      } catch {
+      } catch (err) {
+        if (isApiUnreachableError(err) || isDemoMode()) {
+          enableDemoMode()
+          markLocalComplete()
+          setShowOnboarding(false)
+          return
+        }
+
         if (hasLocal || hasToken) {
           setShowOnboarding(false)
         } else {

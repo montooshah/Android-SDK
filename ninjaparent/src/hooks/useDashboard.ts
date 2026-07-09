@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import { api, type DashboardData } from '../api/client'
+import { getDemoConnections, getDemoDashboard } from '../api/demoFallback'
+import { enableDemoMode, isApiUnreachableError, isDemoMode } from '../lib/demoMode'
 
 export function useDashboard() {
   const [data, setData] = useState<DashboardData | null>(null)
@@ -8,12 +10,24 @@ export function useDashboard() {
   const [error, setError] = useState<string | null>(null)
 
   const refresh = useCallback(async () => {
+    if (isDemoMode()) {
+      setData(getDemoDashboard())
+      setLoading(false)
+      return
+    }
+
     try {
       setError(null)
       const dashboard = await api.getDashboard()
       setData(dashboard)
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load dashboard')
+      if (isApiUnreachableError(err)) {
+        enableDemoMode()
+        setData(getDemoDashboard())
+        setError(null)
+      } else {
+        setError(err instanceof Error ? err.message : 'Failed to load dashboard')
+      }
     } finally {
       setLoading(false)
     }
@@ -24,6 +38,13 @@ export function useDashboard() {
   }, [refresh])
 
   const sync = useCallback(async () => {
+    if (isDemoMode()) {
+      setSyncing(true)
+      await new Promise((r) => setTimeout(r, 1200))
+      setSyncing(false)
+      return
+    }
+
     setSyncing(true)
     try {
       await api.sync()
@@ -36,6 +57,15 @@ export function useDashboard() {
   }, [refresh])
 
   const completeItem = useCallback(async (id: string) => {
+    if (isDemoMode()) {
+      setData((prev) =>
+        prev
+          ? { ...prev, actionItems: prev.actionItems.filter((item) => item.id !== id) }
+          : prev,
+      )
+      return
+    }
+
     await api.completeItem(id)
     setData((prev) =>
       prev
@@ -52,9 +82,20 @@ export function useConnections() {
   const [loading, setLoading] = useState(true)
 
   const refresh = useCallback(async () => {
+    if (isDemoMode()) {
+      setConnections(getDemoConnections())
+      setLoading(false)
+      return
+    }
+
     try {
       const result = await api.getConnections()
       setConnections(result)
+    } catch (err) {
+      if (isApiUnreachableError(err)) {
+        enableDemoMode()
+        setConnections(getDemoConnections())
+      }
     } finally {
       setLoading(false)
     }

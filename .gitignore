@@ -24,3 +24,4 @@ ninjaparent/dist-server/
 ninjaparent/data/
 ninjaparent/.env
 node_modules/
+.netlify/

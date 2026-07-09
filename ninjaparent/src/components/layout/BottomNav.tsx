@@ -27,6 +27,7 @@ export function BottomNav({ active, onChange, criticalCount = 0 }: BottomNavProp
             <button
               key={id}
               type="button"
+              data-testid={`tab-${id}`}
               onClick={() => onChange(id)}
               className={`relative flex flex-1 flex-col items-center gap-0.5 rounded-2xl py-2 transition-colors ${
                 isActive ? 'text-brand-700' : 'text-ink-faint'

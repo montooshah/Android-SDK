@@ -22,7 +22,7 @@ interface FilterPillsProps {
 
 export function FilterPills({ active, onChange }: FilterPillsProps) {
   return (
-    <div className="chip-scroll flex gap-2 overflow-x-auto px-5 py-3">
+    <div className="chip-scroll flex gap-2 overflow-x-auto px-5 py-3" data-testid="filter-pills">
       {filters.map(({ id, label, icon: Icon }) => (
         <button
           key={id}

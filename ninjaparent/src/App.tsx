@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { api } from './api/client'
 import { saveSessionToken } from './lib/session'
+import { isDemoMode } from './lib/demoMode'
 import { useAuth } from './hooks/useAuth'
 import { useConnections, useDashboard } from './hooks/useDashboard'
 import { useOnboardingGate } from './hooks/useOnboarding'
@@ -72,6 +73,10 @@ function App() {
   }
 
   const handleDisconnect = async (id: string) => {
+    if (isDemoMode()) {
+      await refreshConnections()
+      return
+    }
     await api.disconnect(id)
     await refresh()
     await refreshConnections()

@@ -21,6 +21,13 @@
         radial-gradient(ellipse 80% 60% at 50% -10%, rgba(62, 168, 150, 0.35), transparent),
         #0a3831;
     }
+    .logo {
+      width: 88px;
+      height: 88px;
+      margin: 0 auto 1.5rem;
+      border-radius: 22px;
+      box-shadow: 0 12px 40px rgba(0,0,0,0.35);
+    }
     .badge {
       display: inline-block;
       font-size: 0.7rem;
@@ -93,9 +100,10 @@
 <body>
   <section class="hero">
     <p class="badge">Seed round · July 2026</p>
+    <img class="logo" src="logo.svg" alt="NinjaParent logo" width="88" height="88" />
     <h1>NinjaParent</h1>
-    <p class="subtitle">The parent OS for school life. Investor materials and live product are separate — use the app for the real experience.</p>
-    <a class="app-cta" href="/app/" id="app-link">Open the app →</a>
+    <p class="subtitle">The parent OS for school life. Try the live demo — no install, no localhost needed.</p>
+    <a class="app-cta" href="/app/?demo=1" id="app-link">Open the demo app →</a>
   </section>
   <div class="grid">
     <a href="deck/"><div><strong>Pitch deck</strong><span>10 slides — problem, market, ask</span></div><span class="arrow">→</span></a>
@@ -105,9 +113,8 @@
   </div>
   <footer>NinjaParent investor hub · Not the parent app</footer>
   <script>
-    // Local dev: point app link to localhost
     if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') {
-      document.getElementById('app-link').href = 'http://localhost:5173';
+      document.getElementById('app-link').href = 'http://localhost:5173/?demo=1';
     }
   </script>
 </body>

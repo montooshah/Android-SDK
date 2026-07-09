@@ -7,9 +7,9 @@ import { fileURLToPath } from 'url'
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const ROOT = path.join(__dirname, '..')
 const DEMO_DIR = path.join(ROOT, '..', 'demo')
-const VIDEO_SIZE = { width: 1280, height: 720 }
+const VIDEO_SIZE = { width: 390, height: 844 }
 
-async function waitForServer(url, maxAttempts = 30) {
+async function waitForServer(url, maxAttempts = 40) {
   for (let i = 0; i < maxAttempts; i++) {
     try {
       const res = await fetch(url)
@@ -47,69 +47,58 @@ async function main() {
     const context = await browser.newContext({
       recordVideo: { dir: DEMO_DIR, size: VIDEO_SIZE },
       viewport: VIDEO_SIZE,
+      deviceScaleFactor: 2,
+      isMobile: true,
+      hasTouch: true,
     })
 
     const page = await context.newPage()
-    await page.goto('http://127.0.0.1:5173', { waitUntil: 'networkidle' })
-    await sleep(4000)
 
-    // Overview — week stats & AI insight
-    await page.evaluate(() => window.scrollTo({ top: 0, behavior: 'smooth' }))
+    // Onboarding — integrations step with Gmail & Outlook
+    await page.goto('http://127.0.0.1:5173/?demo=1&show=onboarding', { waitUntil: 'networkidle' })
+    await page.waitForSelector('[data-testid="onboarding-flow"]')
     await sleep(3500)
-    await page.evaluate(() => window.scrollTo({ top: 280, behavior: 'smooth' }))
-    await sleep(4000)
-    await page.evaluate(() => window.scrollTo({ top: 520, behavior: 'smooth' }))
-    await sleep(4500)
-
-    // Filter by Noah
-    await page.getByTestId('filter-child-noah').click()
-    await sleep(4000)
-    await page.evaluate(() => window.scrollTo({ top: 350, behavior: 'smooth' }))
-    await sleep(3500)
-
-    // Payments filter
-    await page.getByTestId('filter-type-payment').click()
-    await sleep(4000)
-
-    // Homework filter
-    await page.getByTestId('filter-type-homework').click()
-    await sleep(3500)
-
-    // Overdue filter
-    await page.getByTestId('filter-type-overdue').click()
-    await sleep(3500)
-
-    // Back to all kids + all actions
-    await page.getByTestId('filter-all-kids').click()
-    await sleep(2000)
-    await page.getByTestId('filter-type-all').click()
+    await page.evaluate(() => window.scrollTo({ top: 120, behavior: 'smooth' }))
     await sleep(3000)
+    await page.getByTestId('onboarding-finish').click()
+    await sleep(2500)
 
-    // Complete an action
-    await page.evaluate(() => window.scrollTo({ top: 400, behavior: 'smooth' }))
+    // Today dashboard
+    await page.waitForSelector('[data-testid="week-overview"]')
+    await sleep(2500)
+    const chips = page.getByTestId('child-chips')
+    const pills = page.getByTestId('filter-pills')
+    await page.evaluate(() => window.scrollTo({ top: 200, behavior: 'smooth' }))
+    await sleep(2500)
+    await chips.getByTestId('filter-child-noah').click()
+    await sleep(2500)
+    await pills.getByTestId('filter-type-payment').click()
+    await sleep(2500)
+    await page.evaluate(() => window.scrollTo({ top: 380, behavior: 'smooth' }))
     await sleep(2000)
-    await page.getByTestId('action-btn-1').hover()
+    await page.getByTestId('action-card-1').getByRole('button', { name: 'Done' }).click()
+    await sleep(2500)
+    await chips.getByTestId('filter-all-kids').click()
     await sleep(1500)
-    await page.locator('[data-testid="action-card-1"] button').filter({ hasText: 'Mark complete' }).click()
-    await sleep(3500)
-
-    // Filter Lily
-    await page.getByTestId('filter-child-lily').click()
-    await sleep(4000)
-    await page.evaluate(() => window.scrollTo({ top: 300, behavior: 'smooth' }))
-    await sleep(3500)
-
-    // Events filter
-    await page.getByTestId('filter-type-event').click()
-    await sleep(3500)
-
-    await page.getByTestId('filter-all-kids').click()
+    await pills.getByTestId('filter-type-all').click()
     await sleep(2000)
-    await page.getByTestId('filter-type-all').click()
+
+    // Settings — connected Gmail & Outlook
+    await page.getByTestId('tab-settings').click()
+    await page.waitForSelector('[data-testid="settings-connections"]')
+    await sleep(3500)
+    await page.evaluate(() => window.scrollTo({ top: 180, behavior: 'smooth' }))
+    await sleep(2500)
+
+    // Kids tab
+    await page.getByTestId('tab-kids').click()
     await sleep(3000)
 
+    // Back to Today
+    await page.getByTestId('tab-today').click()
+    await sleep(2000)
     await page.evaluate(() => window.scrollTo({ top: 0, behavior: 'smooth' }))
-    await sleep(4000)
+    await sleep(2500)
 
     const video = page.video()
     await context.close()
