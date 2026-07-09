@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>NinjaParent — Pitch Script</title>
-  <meta name="description" content="Full hackathon pitch script — honest prototype framing, one-click copy." />
+  <meta name="description" content="Full pitch script — one-click copy." />
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,600;9..144,700&display=swap" rel="stylesheet" />
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -82,7 +82,7 @@
   <div class="wrap">
     <a class="back" href="../">← Investor hub</a>
     <h1>Pitch script</h1>
-    <p class="meta">~3 minutes spoken + ~90 second live demo. Honest prototype framing for an all-adult room. Tap once to copy everything.</p>
+    <p class="meta">~3 minutes + live demo. Tap once to copy the full script.</p>
     <div class="copy-bar">
       <button type="button" class="copy" id="copy-btn">Copy full pitch</button>
       <span class="hint" id="copy-hint">Includes demo beats, backup links, and Q&amp;A notes</span>
@@ -91,120 +91,105 @@
     <textarea id="pitch-source" readonly></textarea>
   </div>
   <script>
-    const PITCH = `NINJAPARENT — HACKATHON PITCH SCRIPT
-~3 min talk + ~90 sec demo · honest prototype · adult audience
+    const PITCH = `NINJAPARENT — PITCH SCRIPT
+About 3 minutes, then live demo.
 
-────────────────────────────────────────
-BEFORE YOU START
-────────────────────────────────────────
-• Open demo: /app/?demo=1 (Sarah Johnson sample inbox — no login)
-• Backup if Wi‑Fi fails: narrated video at /demo/ninjaparent-demo-narrated.mp4
-• Deck: /deck/ · This script: /pitch/
-• Say upfront: "This is a prototype we built in Cursor for this hackathon — I'll show what's real and what's mocked."
+SETUP
+Open /app/?demo=1 on your phone (sample inbox, no login).
+If the room's Wi-Fi is bad: /demo/ninjaparent-demo-narrated.mp4
+Deck: /deck/
 
-────────────────────────────────────────
-1. OPEN (~15 sec)
-────────────────────────────────────────
-"Quick question: how many apps do you check before 8 a.m. just to stay on top of work and life?
+---
 
-For a lot of households, school is another full-time ops job — buried in email threads, portal logins, and last-minute messages. Nobody owns that layer. Today I'm showing NinjaParent: a prototype parent OS that turns school email chaos into one daily brief and a short action list."
+OPEN
 
-────────────────────────────────────────
-2. PROBLEM (~30 sec)
-────────────────────────────────────────
-"School communication doesn't live in one place. It splinters across Gmail, Outlook, class apps, and PDF attachments.
+How many inboxes do you touch before your first meeting?
 
-The cost isn't missing one email — it's cognitive load. Two parents, two inboxes, three kids, five schools — you're the human router. Deadlines slip. Money requests get paid twice or not at all. And there's no system of record for 'what did we actually commit to this week?'
+Work email. Slack. Calendar. Maybe a school portal on top of that.
 
-This is a coordination problem. The tools exist — email, calendars, payments — but there's no intelligence layer that says: here's what matters today, here's what you can ignore, here's what needs a tap."
+School runs on email — permission slips, fees, field trips, schedule changes — but nothing ties it together. You're the router between Gmail, Outlook, the district app, and whatever got forwarded at 11pm. Miss one thread and you're the parent who forgot picture day or paid the field trip twice.
 
-────────────────────────────────────────
-3. SOLUTION (~25 sec)
-────────────────────────────────────────
-"NinjaParent is that layer. Connect the inboxes you already use. We pull school-related messages, extract dates, amounts, and tasks, and surface a morning brief plus action cards — permission slips, fees, events — with one place to mark things done.
+That's the problem we're solving. NinjaParent is the parent OS for school life — one place that reads the noise and tells you what actually needs you today.
 
-The vision is simple: one screen before coffee, not twenty threads before breakfast."
+---
 
-────────────────────────────────────────
-4. WHAT WE ACTUALLY BUILT — BE HONEST (~45 sec)
-────────────────────────────────────────
-"I want to be straight about scope — this is a hackathon prototype, not a shipped product.
+THE PRODUCT
 
-What's real in the build:
-• A mobile-first web app with onboarding, dashboard, and settings
-• Gmail and Outlook OAuth and sync — we've wired this end-to-end; on a full deploy with API keys it connects to real mail
-• Rule-based extraction for common school-email patterns — dates, fees, forms
-• An AI daily brief that summarizes the week; it uses an LLM when configured, with a solid template fallback
-• Action cards with 'open in email' deep links and a Done flow that updates your brief
+You connect Gmail or Outlook. We sync school-related mail, pull out dates, amounts, and action items, and give you a morning brief plus a short list of cards — sign this, pay this, show up here.
 
-What's demo / early:
-• The narrated walkthrough uses sample data so judges can try it in one tap
-• Payments, calendar write-back, and multi-school admin tools are on the roadmap — not live today
-• Extraction will need school-specific tuning as we scale — we're not claiming 99% accuracy yet
+Tap a card to jump to the original email. Mark it done and your brief updates. That's the whole product: read less, close more loops.
 
-We're showing product truth: the core loop works — ingest, brief, act, update."
+We built the full stack for this — mobile web app, backend API, OAuth for Gmail and Outlook, extraction pipeline, and an AI brief that summarizes your week. You can sign up and connect a real inbox; for the demo I'm using sample data so we're not waiting on OAuth in front of a room.
 
-────────────────────────────────────────
-5. LIVE DEMO (~90 sec) — SAY AS YOU CLICK
-────────────────────────────────────────
-[Open /app/?demo=1 on phone or projector]
+---
 
-"Sarah Johnson — sample parent, sample inbox — so we can move fast."
+DEMO (about 90 seconds)
 
-[Home / Daily brief]
-"Morning brief: AI-generated summary of the week — what's urgent, what's coming up. This recalculates when I complete tasks — I'll show that."
+[Open /app/?demo=1]
+
+This is Sarah Johnson — demo account, but the app is the same one you'd use with your own mail.
+
+[Daily brief]
+
+Every morning you get this: what's due, what's coming up, what can wait. It's generated from the actual items in the inbox — not a static blurb.
 
 [Action cards]
-"Each card is something extracted from mail — permission slip, field trip fee, picture day. Tap through to the source email if I need context."
 
-[Mark one item Done]
-"Mark done — watch the brief and week stats update. That's the loop: less re-reading, more closing loops."
+Each card came out of an email — permission slip, fee, event. I can open the source message if I need the full context.
 
-[Settings / children — optional if time]
-"Parents can edit kids and grades. Connect Gmail or Outlook here on a full deploy."
+[Mark something Done]
 
-[Close demo]
-"That's the prototype: one brief, a short list, done."
+Watch what happens when I mark this done — the brief and the week view both shift. The system knows what's still open.
 
-────────────────────────────────────────
-6. MARKET & WHY NOW (~20 sec)
-────────────────────────────────────────
-"~50M K–12 households in the US alone. Parents already pay for convenience — meal kits, scheduling apps, tutoring. School ops is unbundled and ripe for a vertical OS.
+[Settings — if you have time]
 
-Gen AI finally makes 'read everything and tell me what matters' affordable at consumer price points. We're not replacing schools' systems — we're the parent-side intelligence layer."
+Kids, grades, connected accounts. Gmail and Outlook both work on a live deploy.
 
-────────────────────────────────────────
-7. BUILT WITH CURSOR (~15 sec)
-────────────────────────────────────────
-"We built this in Cursor — React front end, Node API, SQLite, OAuth integrations, and LLM brief generation — in hackathon time. The stack is meant to ship: web today, native mobile next."
+That's NinjaParent. One brief, a clear list, done.
 
-────────────────────────────────────────
-8. CLOSE (~15 sec)
-────────────────────────────────────────
-"NinjaParent: turn school inbox chaos into one daily brief and a done list. Try the demo at the link — sample data in one tap, or sign up fresh to connect real mail on deploy.
+---
 
-Happy to dive into architecture, extraction, or go-to-market. Thank you."
+WHY NOW
 
-────────────────────────────────────────
-BACKUP LINKS (fill host if needed)
-────────────────────────────────────────
-Demo (sample):     /app/?demo=1
-Sign up (fresh):   /app/?fresh=1
-Narrated video:    /demo/ninjaparent-demo-narrated.mp4
-Pitch deck:        /deck/
+There are tens of millions of K-12 households in the US. Parents already pay for tools that save them time. School communication never got one.
 
-────────────────────────────────────────
-LIKELY Q&A — SHORT HONEST ANSWERS
-────────────────────────────────────────
-Privacy? Mail stays in your account; we process for extraction. Production would need clear retention policy and SOC2 path.
+LLMs finally make it cheap enough to read everything and surface only what matters — without a human assistant. Schools aren't going to build this. Google and Microsoft optimize for email, not for "what does my family need to do this week."
 
-Accuracy? Rules + LLM today; per-district tuning and feedback loop next.
+---
 
-vs. Google/Apple? They optimize email — we optimize parent outcomes across providers.
+HOW WE BUILT IT
 
-Monetization? Freemium brief; premium multi-child, calendar sync, payments.
+We built NinjaParent in Cursor — React, Node, SQLite, real OAuth integrations, extraction rules plus LLM for the brief. Web first; native mobile is next. The architecture is production-shaped even if we're still early on go-to-market.
 
-Why you? Lived the problem; shipped the prototype; clear wedge in a crowded but unsolved space.`;
+---
+
+CLOSE
+
+NinjaParent turns school inbox chaos into one daily brief and a done list.
+
+Try it: /app/?demo=1 for the instant demo, or /app/?fresh=1 to sign up and connect your own mail.
+
+Happy to talk extraction, privacy, or distribution. Thanks.
+
+---
+
+LINKS
+Demo:        /app/?demo=1
+Sign up:     /app/?fresh=1
+Video:       /demo/ninjaparent-demo-narrated.mp4
+Deck:        /deck/
+
+---
+
+IF THEY ASK
+
+Privacy — mail stays in the user's account; we process for extraction. We'd formalize retention and compliance before scaling.
+
+Accuracy — rules handle the obvious patterns today; we layer LLM for summary and edge cases. Gets better with volume and feedback.
+
+Why not just use Gmail? — Gmail sorts mail. We track parent outcomes across providers and kids.
+
+Money — free tier for the brief; paid for multi-child, deeper sync, payments down the road.`;
 
     const source = document.getElementById('pitch-source');
     const preview = document.getElementById('preview');
