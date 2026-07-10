@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none">
+  <defs>
+    <linearGradient id="bg" x1="64" y1="48" x2="448" y2="464" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#177564"/>
+      <stop offset="1" stop-color="#0a3831"/>
+    </linearGradient>
+    <linearGradient id="shine" x1="160" y1="120" x2="360" y2="280" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#ffffff" stop-opacity="0.35"/>
+      <stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="112" fill="url(#bg)"/>
+  <path d="M256 88L120 168v120c0 78.4 58.2 151.6 136 168 77.8-16.4 136-89.6 136-168V168L256 88z" fill="#ffffff" fill-opacity="0.12"/>
+  <path d="M256 120L152 184v104c0 62.8 46.6 121.4 104 135.2 57.4-13.8 104-72.4 104-135.2V184L256 120z" fill="#ffffff" fill-opacity="0.95"/>
+  <path d="M256 120v319.2c57.4-13.8 104-72.4 104-135.2V184L256 120z" fill="#d0ebe6"/>
+  <ellipse cx="220" cy="200" rx="72" ry="48" fill="url(#shine)"/>
+  <path d="M208 248h96v24c0 26.5-21.5 48-48 48s-48-21.5-48-48v-24z" fill="#177564"/>
+  <path d="M232 260h48v12c0 13.3-10.7 24-24 24s-24-10.7-24-24v-12z" fill="#f4f2ed"/>
+  <circle cx="224" cy="220" r="10" fill="#177564"/>
+  <circle cx="288" cy="220" r="10" fill="#177564"/>
+  <path d="M240 236c8 8 24 8 32 0" stroke="#177564" stroke-width="6" stroke-linecap="round"/>
+  <path d="M320 176l24 24-56 56-32-12 12-32 52-36z" fill="#e0634f"/>
+  <path d="M332 188l12 12" stroke="#ffffff" stroke-width="4" stroke-linecap="round"/>
+</svg>

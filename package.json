@@ -1,0 +1,13 @@
+{
+  "name": "ninjaparent-investor-demo",
+  "private": true,
+  "scripts": {
+    "pdf": "node scripts/export-one-pager-pdf.mjs",
+    "narrate": "python3 scripts/generate-narrated-video.py",
+    "build:site": "node scripts/build-site.mjs",
+    "build:all": "npm run pdf && npm run narrate && npm run build:site"
+  },
+  "devDependencies": {
+    "playwright": "^1.61.1"
+  }
+}

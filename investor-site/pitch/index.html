@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NinjaParent — Pitch Script</title>
+  <meta name="description" content="Full pitch script — one-click copy." />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,600;9..144,700&display=swap" rel="stylesheet" />
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'DM Sans', sans-serif;
+      min-height: 100vh;
+      background: #0a3831;
+      color: #f4f2ed;
+      padding: 2rem 1.25rem 3rem;
+    }
+    .wrap { max-width: 42rem; margin: 0 auto; }
+    a.back {
+      display: inline-block;
+      color: #a3d9cf;
+      text-decoration: none;
+      font-size: 0.9rem;
+      margin-bottom: 1.5rem;
+    }
+    a.back:hover { text-decoration: underline; }
+    h1 {
+      font-family: 'Fraunces', serif;
+      font-size: clamp(1.75rem, 5vw, 2.25rem);
+      margin-bottom: 0.5rem;
+    }
+    .meta {
+      font-size: 0.9rem;
+      color: rgba(244, 242, 237, 0.6);
+      margin-bottom: 1.5rem;
+      line-height: 1.5;
+    }
+    .copy-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      align-items: center;
+      margin-bottom: 1.25rem;
+    }
+    button.copy {
+      font-family: inherit;
+      font-weight: 600;
+      font-size: 1rem;
+      padding: 0.85rem 1.5rem;
+      border: none;
+      border-radius: 999px;
+      background: #f4f2ed;
+      color: #0a3831;
+      cursor: pointer;
+      transition: transform 0.15s, background 0.15s;
+    }
+    button.copy:hover { transform: translateY(-1px); }
+    button.copy.copied { background: #3ea896; color: #fff; }
+    .hint { font-size: 0.85rem; color: rgba(244, 242, 237, 0.5); }
+    pre {
+      white-space: pre-wrap;
+      word-wrap: break-word;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.95rem;
+      line-height: 1.65;
+      background: rgba(0, 0, 0, 0.25);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 1rem;
+      padding: 1.25rem 1.35rem;
+      color: rgba(244, 242, 237, 0.92);
+    }
+    textarea {
+      position: absolute;
+      left: -9999px;
+      opacity: 0;
+      height: 0;
+      width: 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <a class="back" href="../">← Investor hub</a>
+    <h1>Pitch script</h1>
+    <p class="meta">~3 minutes + live demo. Tap once to copy the full script.</p>
+    <div class="copy-bar">
+      <button type="button" class="copy" id="copy-btn">Copy full pitch</button>
+      <span class="hint" id="copy-hint">Includes demo beats, backup links, and Q&amp;A notes</span>
+    </div>
+    <pre id="preview" aria-hidden="true"></pre>
+    <textarea id="pitch-source" readonly></textarea>
+  </div>
+  <script>
+    const PITCH = `NINJAPARENT — PITCH SCRIPT
+About 3 minutes, then live demo.
+
+SETUP
+Open /app/?demo=1 on your phone (sample inbox, no login).
+If the room's Wi-Fi is bad: /demo/ninjaparent-demo-narrated.mp4
+Deck: /deck/
+
+---
+
+OPEN
+
+How many inboxes do you touch before your first meeting?
+
+Work email. Slack. Calendar. Maybe a school portal on top of that.
+
+School runs on email — permission slips, fees, field trips, schedule changes — but nothing ties it together. You're the router between Gmail, Outlook, the district app, and whatever got forwarded at 11pm. Miss one thread and you're the parent who forgot picture day or paid the field trip twice.
+
+That's the problem we're solving. NinjaParent is the parent OS for school life — one place that reads the noise and tells you what actually needs you today.
+
+---
+
+THE PRODUCT
+
+You connect Gmail or Outlook. We sync school-related mail, pull out dates, amounts, and action items, and give you a morning brief plus a short list of cards — sign this, pay this, show up here.
+
+Tap a card to jump to the original email. Mark it done and your brief updates. That's the whole product: read less, close more loops.
+
+We built the full stack for this — mobile web app, backend API, OAuth for Gmail and Outlook, extraction pipeline, and an AI brief that summarizes your week. You can sign up and connect a real inbox; for the demo I'm using sample data so we're not waiting on OAuth in front of a room.
+
+---
+
+DEMO (about 90 seconds)
+
+[Open /app/?demo=1]
+
+This is Sarah Johnson — demo account, but the app is the same one you'd use with your own mail.
+
+[Daily brief]
+
+Every morning you get this: what's due, what's coming up, what can wait. It's generated from the actual items in the inbox — not a static blurb.
+
+[Action cards]
+
+Each card came out of an email — permission slip, fee, event. I can open the source message if I need the full context.
+
+[Mark something Done]
+
+Watch what happens when I mark this done — the brief and the week view both shift. The system knows what's still open.
+
+[Settings — if you have time]
+
+Kids, grades, connected accounts. Gmail and Outlook both work on a live deploy.
+
+That's NinjaParent. One brief, a clear list, done.
+
+---
+
+WHY NOW
+
+There are tens of millions of K-12 households in the US. Parents already pay for tools that save them time. School communication never got one.
+
+LLMs finally make it cheap enough to read everything and surface only what matters — without a human assistant. Schools aren't going to build this. Google and Microsoft optimize for email, not for "what does my family need to do this week."
+
+---
+
+HOW WE BUILT IT
+
+We built NinjaParent in Cursor — React, Node, SQLite, real OAuth integrations, extraction rules plus LLM for the brief. Web first; native mobile is next. The architecture is production-shaped even if we're still early on go-to-market.
+
+---
+
+CLOSE
+
+NinjaParent turns school inbox chaos into one daily brief and a done list.
+
+Try it: /app/?demo=1 for the instant demo, or /app/?fresh=1 to sign up and connect your own mail.
+
+Happy to talk extraction, privacy, or distribution. Thanks.
+
+---
+
+LINKS
+Demo:        /app/?demo=1
+Sign up:     /app/?fresh=1
+Video:       /demo/ninjaparent-demo-narrated.mp4
+Deck:        /deck/
+
+---
+
+IF THEY ASK
+
+Privacy — mail stays in the user's account; we process for extraction. We'd formalize retention and compliance before scaling.
+
+Accuracy — rules handle the obvious patterns today; we layer LLM for summary and edge cases. Gets better with volume and feedback.
+
+Why not just use Gmail? — Gmail sorts mail. We track parent outcomes across providers and kids.
+
+Money — free tier for the brief; paid for multi-child, deeper sync, payments down the road.`;
+
+    const source = document.getElementById('pitch-source');
+    const preview = document.getElementById('preview');
+    const btn = document.getElementById('copy-btn');
+    const hint = document.getElementById('copy-hint');
+
+    source.value = PITCH;
+    preview.textContent = PITCH;
+
+    async function copyPitch() {
+      try {
+        await navigator.clipboard.writeText(PITCH);
+      } catch {
+        source.select();
+        document.execCommand('copy');
+      }
+      btn.textContent = 'Copied!';
+      btn.classList.add('copied');
+      hint.textContent = 'Paste into Notes, Teleprompter, or Google Doc';
+      setTimeout(() => {
+        btn.textContent = 'Copy full pitch';
+        btn.classList.remove('copied');
+        hint.textContent = 'Includes demo beats, backup links, and Q&A notes';
+      }, 2500);
+    }
+
+    btn.addEventListener('click', copyPitch);
+  </script>
+</body>
+</html>

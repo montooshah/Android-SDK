@@ -12,3 +12,16 @@ gen
 
 # Mac
 .DS_Store
+
+# NinjaParent demo
+demo/*.webm
+demo/tts-work/
+demo/narration.mp3
+site/
+ninjaparent/node_modules/
+ninjaparent/dist/
+ninjaparent/dist-server/
+ninjaparent/data/
+ninjaparent/.env
+node_modules/
+.netlify/
