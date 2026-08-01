@@ -2,13 +2,15 @@
 
 Chrome extension (Manifest V3) that uploads a local **CSV**, **TXT**, or **PDF**, extracts fields, and fills the active web form. Tuned for Xero-style invoice/bill pages, but works on any HTML form via a generic profile.
 
-> Full architecture notes: see [PLAN.md](./PLAN.md).
+> Full architecture notes: see [PLAN.md](./PLAN.md).  
+> Step-by-step testing: see [TESTING.md](./TESTING.md).  
+> Publish as its own GitHub repo: `bash scripts/publish-new-repo.sh montooshah/xero-form-filler`
 
 ## Install (unpacked)
 
 1. Open `chrome://extensions`
 2. Enable **Developer mode**
-3. **Load unpacked** → select this folder (`xero/form-filler`)
+3. **Load unpacked** → select this folder (the one containing `manifest.json`)
 4. Pin the extension
 
 ## Quick test
@@ -17,6 +19,8 @@ Chrome extension (Manifest V3) that uploads a local **CSV**, **TXT**, or **PDF**
 2. Click the extension icon
 3. Upload `demo/samples/invoice.csv` (or `.txt` / `.pdf`)
 4. Review proposed mappings → **Fill form**
+
+For the full checklist (CSV/TXT/PDF, overrides, Xero live page, debugging), use **[TESTING.md](./TESTING.md)**.
 
 ## Features
 
