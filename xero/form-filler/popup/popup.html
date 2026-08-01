@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Xero Form Filler</title>
+    <link rel="stylesheet" href="popup.css" />
+  </head>
+  <body>
+    <header class="header">
+      <div class="brand">
+        <span class="brand-mark" aria-hidden="true"></span>
+        <div>
+          <h1>Xero Form Filler</h1>
+          <p class="tagline">Upload CSV, TXT, or PDF → fill the page</p>
+        </div>
+      </div>
+    </header>
+
+    <main class="main">
+      <section class="panel">
+        <label class="label" for="fileInput">Source file</label>
+        <div class="dropzone" id="dropzone">
+          <input
+            type="file"
+            id="fileInput"
+            accept=".csv,.txt,.pdf,text/csv,text/plain,application/pdf"
+          />
+          <p class="drop-title">Drop a file or click to browse</p>
+          <p class="drop-hint">CSV · TXT · PDF</p>
+        </div>
+        <p class="file-name" id="fileName" hidden></p>
+      </section>
+
+      <section class="panel row">
+        <div class="field">
+          <label class="label" for="profileSelect">Profile</label>
+          <select id="profileSelect">
+            <option value="auto">Auto-detect</option>
+            <option value="xero-invoice">Xero Invoice / Bill</option>
+            <option value="generic">Generic form</option>
+          </select>
+        </div>
+        <button type="button" class="btn secondary" id="scanBtn" title="Re-scan page fields">
+          Scan page
+        </button>
+      </section>
+
+      <section class="panel" id="statusPanel">
+        <p class="status" id="status">Upload a file to begin.</p>
+      </section>
+
+      <section class="panel" id="extractedPanel" hidden>
+        <div class="panel-head">
+          <h2>Extracted data</h2>
+          <span class="badge" id="extractCount">0</span>
+        </div>
+        <div class="kv-list" id="extractedList"></div>
+      </section>
+
+      <section class="panel" id="mappingPanel" hidden>
+        <div class="panel-head">
+          <h2>Proposed mappings</h2>
+          <span class="badge" id="mapCount">0</span>
+        </div>
+        <div class="map-list" id="mappingList"></div>
+      </section>
+
+      <section class="actions" id="actions" hidden>
+        <button type="button" class="btn primary" id="fillBtn">Fill form</button>
+        <button type="button" class="btn ghost" id="optionsBtn">Options</button>
+      </section>
+    </main>
+
+    <!-- Parsers & mapper (order matters) -->
+    <script src="../lib/pdfjs/pdf.min.js"></script>
+    <script src="../lib/normalize.js"></script>
+    <script src="../lib/parsers/csvParser.js"></script>
+    <script src="../lib/parsers/txtParser.js"></script>
+    <script src="../lib/parsers/pdfParser.js"></script>
+    <script src="../lib/profiles/generic.js"></script>
+    <script src="../lib/profiles/xero-invoice.js"></script>
+    <script src="../lib/fieldMapper.js"></script>
+    <script src="popup.js"></script>
+  </body>
+</html>

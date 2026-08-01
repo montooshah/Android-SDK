@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Xero Form Filler — Options</title>
+    <link rel="stylesheet" href="options.css" />
+  </head>
+  <body>
+    <main class="wrap">
+      <header>
+        <h1>Xero Form Filler</h1>
+        <p>Manage saved field-mapping overrides and default profile.</p>
+      </header>
+
+      <section class="card">
+        <h2>Default profile</h2>
+        <label for="defaultProfile">Used when Auto-detect does not match a host</label>
+        <select id="defaultProfile">
+          <option value="xero-invoice">Xero Invoice / Bill</option>
+          <option value="generic">Generic form</option>
+        </select>
+        <button type="button" class="btn" id="saveProfile">Save</button>
+        <p class="msg" id="profileMsg" hidden></p>
+      </section>
+
+      <section class="card">
+        <h2>Saved overrides</h2>
+        <p class="help">
+          Overrides are stored per hostname when you change a mapping in the popup.
+        </p>
+        <div id="overridesList" class="list"></div>
+        <button type="button" class="btn danger" id="clearOverrides">Clear all overrides</button>
+        <p class="msg" id="clearMsg" hidden></p>
+      </section>
+
+      <section class="card">
+        <h2>How to install / test</h2>
+        <ol>
+          <li>Open <code>chrome://extensions</code></li>
+          <li>Enable <strong>Developer mode</strong></li>
+          <li>Click <strong>Load unpacked</strong> and select the <code>xero/form-filler</code> folder</li>
+          <li>Open <code>demo/sample-form.html</code> in Chrome</li>
+          <li>Upload a sample from <code>demo/samples/</code> and click <strong>Fill form</strong></li>
+        </ol>
+      </section>
+    </main>
+    <script src="options.js"></script>
+  </body>
+</html>
