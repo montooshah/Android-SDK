@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Demo — Xero-style Invoice Form</title>
+    <style>
+      :root {
+        --bg: #f4f7f9;
+        --card: #ffffff;
+        --ink: #1a2b34;
+        --muted: #5c7380;
+        --line: #d5e0e6;
+        --accent: #13b5ea;
+        --font: "Segoe UI", "Helvetica Neue", sans-serif;
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        font-family: var(--font);
+        color: var(--ink);
+        background:
+          linear-gradient(180deg, #e8f6fc 0%, var(--bg) 220px);
+        min-height: 100vh;
+      }
+      .wrap {
+        max-width: 860px;
+        margin: 0 auto;
+        padding: 32px 20px 64px;
+      }
+      h1 {
+        margin: 0 0 6px;
+        font-size: 28px;
+      }
+      .sub {
+        margin: 0 0 24px;
+        color: var(--muted);
+      }
+      form {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 24px;
+        display: grid;
+        gap: 16px;
+        box-shadow: 0 8px 24px rgba(26, 43, 52, 0.06);
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+      }
+      @media (max-width: 640px) {
+        .grid { grid-template-columns: 1fr; }
+      }
+      label {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        font-size: 13px;
+        font-weight: 600;
+      }
+      input, textarea, select {
+        font: inherit;
+        padding: 10px 12px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: #fff;
+      }
+      input:focus, textarea:focus, select:focus {
+        outline: 2px solid rgba(19, 181, 234, 0.35);
+        border-color: var(--accent);
+      }
+      textarea { min-height: 72px; resize: vertical; }
+      .full { grid-column: 1 / -1; }
+      .hint {
+        margin-top: 16px;
+        padding: 12px 14px;
+        background: #eaf8fd;
+        border-left: 3px solid var(--accent);
+        border-radius: 6px;
+        color: var(--muted);
+        font-size: 13px;
+      }
+      button[type="submit"] {
+        justify-self: start;
+        background: var(--accent);
+        color: #06202a;
+        border: none;
+        border-radius: 8px;
+        padding: 10px 18px;
+        font-weight: 700;
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <h1>New Invoice</h1>
+      <p class="sub">
+        Demo page mimicking a Xero-style invoice form. Load the extension, upload a sample file, then Fill.
+      </p>
+
+      <form id="invoiceForm" onsubmit="event.preventDefault(); alert('Demo only — form not submitted.');">
+        <div class="grid">
+          <label>
+            Contact
+            <input id="contactName" name="contact" type="text" placeholder="Customer or supplier" />
+          </label>
+          <label>
+            Email
+            <input id="email" name="email" type="email" placeholder="billing@example.com" />
+          </label>
+          <label>
+            Invoice number
+            <input id="invoiceNumber" name="invoiceNumber" type="text" />
+          </label>
+          <label>
+            Reference
+            <input id="reference" name="reference" type="text" />
+          </label>
+          <label>
+            Invoice date
+            <input id="invoiceDate" name="invoiceDate" type="text" placeholder="YYYY-MM-DD" />
+          </label>
+          <label>
+            Due date
+            <input id="dueDate" name="dueDate" type="text" placeholder="YYYY-MM-DD" />
+          </label>
+          <label>
+            Currency
+            <select id="currency" name="currency">
+              <option value="">Select…</option>
+              <option value="USD">USD</option>
+              <option value="GBP">GBP</option>
+              <option value="EUR">EUR</option>
+              <option value="INR">INR</option>
+              <option value="AUD">AUD</option>
+            </select>
+          </label>
+          <label>
+            Purchase order
+            <input id="purchaseOrder" name="purchaseOrder" type="text" />
+          </label>
+          <label class="full">
+            Description
+            <textarea id="description" name="description" placeholder="Line item description"></textarea>
+          </label>
+          <label>
+            Quantity
+            <input id="quantity" name="quantity" type="text" />
+          </label>
+          <label>
+            Unit price
+            <input id="unitPrice" name="unitPrice" type="text" />
+          </label>
+          <label>
+            Tax
+            <input id="tax" name="tax" type="text" />
+          </label>
+          <label>
+            Total
+            <input id="total" name="total" type="text" />
+          </label>
+          <label class="full">
+            Notes
+            <textarea id="notes" name="notes"></textarea>
+          </label>
+        </div>
+        <button type="submit">Save (demo)</button>
+      </form>
+
+      <div class="hint">
+        Tip: use samples in <code>demo/samples/</code> — <code>invoice.csv</code>, <code>invoice.txt</code>, or <code>invoice.pdf</code>.
+      </div>
+    </div>
+  </body>
+</html>

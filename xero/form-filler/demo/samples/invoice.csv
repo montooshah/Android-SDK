@@ -1,0 +1,15 @@
+Field,Value
+Contact,Acme Consulting Ltd
+Email,ap@acmeconsulting.example
+Invoice Number,INV-2048
+Reference,Website redesign Q3
+Purchase Order,PO-7781
+Invoice Date,2026-07-15
+Due Date,2026-08-14
+Currency,USD
+Description,UX audit and prototype delivery
+Quantity,1
+Unit Price,4500.00
+Tax,450.00
+Total,4950.00
+Notes,Thank you for your business.
